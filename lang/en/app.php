@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 return [
     'label'       => [
         'documentation'                           => 'Documentation',
@@ -14,7 +12,7 @@ return [
         'remember_me'                             => 'Remember me',
         'forgot_your_password'                    => 'Forgot your password?',
         'register'                                => 'Register',
-        'register_caption'                        => "Join to our system. Let's make a great work together.",
+        'register_caption'                        => 'Join to our system. Let\'s make a great work together.',
         'build_with'                              => 'Build with',
         'by'                                      => 'by',
         'welcome'                                 => 'Welcome',
@@ -41,7 +39,7 @@ return [
         'use_authentication_code'                 => 'Use an authentication code',
         'email_verification'                      => 'Email Verification',
         'verify_email'                            => 'Verify Email',
-        'verify_email_caption'                    => "Before continuing, could you verify your email address by clicking on the link we just emailed to you? If you didn't receive the email, we will gladly send you another.",
+        'verify_email_caption'                    => 'Before continuing, could you verify your email address by clicking on the link we just emailed to you? If you didn\'t receive the email, we will gladly send you another.',
         'email_verification_link'                 => 'A new verification link has been sent to the email address you provided in your profile settings.',
         'edit_profile'                            => 'Edit Profile',
         'logout'                                  => 'Log Out',
@@ -57,7 +55,7 @@ return [
         'manage_api_tokens_caption'               => 'You may delete any of your existing tokens if they are no longer needed.',
         'last_used'                               => 'Last used',
         'api_token'                               => 'API Token',
-        'api_token_caption'                       => "Please copy your new API token. For your security, it won't be shown again.",
+        'api_token_caption'                       => 'Please copy your new API token. For your security, it won\'t be shown again.',
         'api_token_permissions'                   => 'API Token Permissions',
         'delete_api_token'                        => 'Delete API Token',
         'delete_api_token_caption'                => 'Are you sure you would like to delete this API token?',
@@ -76,7 +74,7 @@ return [
         'logout_other_browser_session'            => 'Log Out Other Browser Sessions',
         'browser_session_caption'                 => 'Please enter your password to confirm you would like to log out of your other browser sessions across all of your devices.',
         'profile_information'                     => 'Profile Information',
-        'profile_information_description'         => "Update your account's profile information and email address.",
+        'profile_information_description'         => 'Update your account\'s profile information and email address.',
         'photo'                                   => 'Photo',
         'email_address_is_unverified'             => 'Your email address is unverified.',
         'click_here_to_resend_verification_email' => 'Click here to re-send the verification email.',
@@ -91,9 +89,9 @@ return [
         'two_factor_auth_enabled'                 => 'You have enabled two factor authentication.',
         'two_factor_auth_enabling'                => 'Finish enabling two factor authentication.',
         'two_factor_auth_not_enabled'             => 'You have not enabled two factor authentication.',
-        'two_factor_auth_caption'                 => "When two factor authentication is enabled, you will be prompted for a secure, random token during authentication. You may retrieve this token from your phone's Google Authenticator application.",
-        'two_factor_auth_finish'                  => "To finish enabling two factor authentication, scan the following QR code using your phone's authenticator application or enter the setup key and provide the generated OTP code.",
-        'two_factor_auth_now_enabled'             => "Two factor authentication is now enabled. Scan the following QR code using your phone's authenticator application or enter the setup key.",
+        'two_factor_auth_caption'                 => 'When two factor authentication is enabled, you will be prompted for a secure, random token during authentication. You may retrieve this token from your phone\'s Google Authenticator application.',
+        'two_factor_auth_finish'                  => 'To finish enabling two factor authentication, scan the following QR code using your phone\'s authenticator application or enter the setup key and provide the generated OTP code.',
+        'two_factor_auth_now_enabled'             => 'Two factor authentication is now enabled. Scan the following QR code using your phone\'s authenticator application or enter the setup key.',
         'two_factor_auth_recovery_code'           => 'Store these recovery codes in a secure password manager. They can be used to recover access to your account if your two factor authentication device is lost.',
         'manage_team'                             => 'Manage Team',
         'team_settings'                           => 'Team Settings',
@@ -138,11 +136,16 @@ return [
         'departement'                             => 'Departement',
         'jabatan'                                 => 'Position',
         'user_management'                         => 'User Management',
-        'pegawai_management'                      => 'Employee Management',
+        'employee_management'                     => 'Employee Management',
         'name'                                    => 'Name',
         'status'                                  => 'Status',
         'statusepe'                               => 'Status Kepegawaian',
         'phone_number'                            => 'Phone Number',
+        'something'                               => 'Something',
+        'admin'                                   => 'Admin',
+        'employee'                                => 'Employee',
+        'license'                                 => 'License',
+        'registrationcertificate'                 => 'Registrationcertificate',
     ],
     'placeholder' => [
         'email'           => 'email@email.com',
@@ -156,7 +159,7 @@ return [
         'title'           => 'Title',
         'description'     => 'Description',
         'generate_slug'   => 'Leave blank to generate automatically',
-        'role_name'       => 'Role Name'
+        'role_name'       => 'Role Name',
     ],
     'button'      => [
         'login'                          => 'Log In',

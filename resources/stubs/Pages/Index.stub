@@ -21,6 +21,7 @@ const props = defineProps({
     filters: Object,
     {{modelNamePluralLowerCase}}: Object,
     breadcrumbs: Object,
+    statuses: Object,
     perPage: Number,
 });
 
@@ -35,9 +36,7 @@ const data = reactive({
     multipleSelect: false,
     {{modelNameLowerCase}}: null,
 });
-const getStatusLabel = (status) => {
-    return status == 1 ? 'Active' : 'Inactive';
-};
+
 const order = (field) => {
     data.params.field = field;
     data.params.order = data.params.order === "asc" ? "desc" : "asc";
@@ -88,7 +87,8 @@ const select = () => {
                     <Table>
                         <template #table-action>
                             <div class="flex shrink-0 rounded overflow-hidden">
-                                <Create v-show="can(['{{modelNameLowerCase}} create'])" :title="props.title"/>
+                                <SelectInput v-model="data.params.perPage" :dataSet="$page.props.app.perpage" class="h-9 text-sm px-3"/>
+                                <Create v-show="can(['{{modelNameLowerCase}} create'])" :title="props.title" :statuses="props.statuses"/>
                                 <DeleteBulk v-show=" data.selectedId.length != 0 && can(['{{modelNameLowerCase}} delete'])
                                     "
                                     :selectedId="data.selectedId"
@@ -99,16 +99,27 @@ const select = () => {
                                     "
                                 />
                             </div>
-                            <div class="flex justify-end items-center gap-2">
-                                <div class="flex space-x-2">
-                                    <SelectInput class="h-9 text-sm" v-model="data.params.perPage" :dataSet="$page.props.app.perpage"/>
+                            <div class="flex items-center space-x-2">
+                                <div class="flex space-x-0">
+                                    <button class="flex items-center justify-center w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-l-md hover:bg-gray-300 dark:hover:bg-gray-600"
+                                            @click="toggleSearch">
+                                        <MagnifyingGlassIcon class="w-5 h-5 text-gray-950 dark:text-gray-300"/>
+                                    </button>
+                                    <TextInput v-if="showSearch" v-model="data.params.search"
+                                               :placeholder="lang().placeholder.search"
+                                               class="block h-9 transition-all duration-300"
+                                               type="text"/>
+                                    <button class="flex items-center px-3 py-2 bg-green-500 text-white border border-green-600 rounded-r-md hover:bg-green-600"
+                                            @click="exportData('all')">
+                                        <ArrowDownTrayIcon class="w-5 h-5 mr-2"/>
+                                        <span class="text-sm">All</span>
+                                    </button>
                                 </div>
-                                <TextInput v-model="data.params.search" type="text" class="block h-9" :placeholder="lang().placeholder.search"/>
                             </div>
                         </template>
                         <template #table-head>
                             <tr>
-                                <th class="p-4 text-left w-5">
+                                <th class="p-4 text-center w-5">
                                     <Checkbox v-model:checked="data.multipleSelect" @change="selectAll"/>
                                 </th>
                                 <th class="p-4 text-center w-5">#</th>
@@ -143,12 +154,12 @@ const select = () => {
                                 </td>
                                 <td class="whitespace-nowrap px-2 py-1 text-center">{{ ++index }}</td>
                                 <td class="whitespace-nowrap px-2 py-1">{{ {{modelNameLowerCase}}.name }}</td>
-                                <td class="whitespace-nowrap px-4 py-1">{{ getStatusLabel({{modelNameLowerCase}}.status) }}</td>
+                                <td class="whitespace-nowrap px-4 py-1">{{ props.statuses[{{modelNameLowerCase}}.status] || '-' }}</td>
                                 <td class="whitespace-nowrap px-2 py-1">{{ {{modelNameLowerCase}}.created_at }}</td>
                                 <td class="whitespace-nowrap px-2 py-1">{{ {{modelNameLowerCase}}.user?.name }}</td>
                                 <td class="whitespace-nowrap flex justify-end px-2 py-1">
                                     <div class="flex w-fit rounded overflow-hidden">
-                                        <Edit v-show="can(['{{modelNameLowerCase}} update'])" :title="props.title" :{{modelNameLowerCase}}="data.{{modelNameLowerCase}}" @open="data.{{modelNameLowerCase}} = {{modelNameLowerCase}}"/>
+                                        <Edit v-show="can(['{{modelNameLowerCase}} update'])" :title="props.title" :statuses="props.statuses" :{{modelNameLowerCase}}="data.{{modelNameLowerCase}}" @open="data.{{modelNameLowerCase}} = {{modelNameLowerCase}}"/>
                                         <Delete v-show="can(['{{modelNameLowerCase}} delete'])" :title="props.title" :{{modelNameLowerCase}}="data.{{modelNameLowerCase}}"@open="data.{{modelNameLowerCase}} = {{modelNameLowerCase}}"/>
                                     </div>
                                 </td>

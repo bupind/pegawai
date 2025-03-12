@@ -4,10 +4,13 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DataController;
 use App\Http\Controllers\DepartementController;
+use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\GuestController;
 use App\Http\Controllers\JabatanController;
+use App\Http\Controllers\LicenseController;
 use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\RegistrationCertificateController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SettingController;
 use Illuminate\Support\Facades\Route;
@@ -31,18 +34,15 @@ Route::get('/set-locale/{locale}', function($locale) {
     return back();
 })->name('set-locale');
 
-Route::get('dropdown/bumn', [DataController::class, 'bumns'])->name('dropdown.bumn');
-
 Route::prefix('system')->middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
     'verified',
 ])->group(function() {
-    Route::prefix('dropdown')->group(function() {
-        Route::get('users', [DataController::class, 'users'])->name('dropdown.users');
-        Route::get('jabatan', [DataController::class, 'jabatan'])->name('dropdown.jabatan');
-        Route::get('department', [DataController::class, 'department'])->name('dropdown.department');
 
+    Route::prefix('dropdown')->group(function() {
+        Route::get('employees', [DataController::class, 'employees'])->name('dropdown.employees');
+        Route::get('certificates', [DataController::class, 'certificates'])->name('dropdown.certificates');
     });
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -59,13 +59,14 @@ Route::prefix('system')->middleware([
 
     Route::resource('setting', SettingController::class)->except('create', 'store', 'show', 'edit', 'destory');
 
-    Route::resource('pegawai', PegawaiController::class);
-    Route::post('pegawai/destroy-bulk', [PegawaiController::class, 'destroyBulk'])->name('pegawai.destroy-bulk');
+    Route::resource('employee', EmployeeController::class);
+    Route::post('employee/destroy-bulk', [EmployeeController::class, 'destroyBulk'])->name('employee.destroy-bulk');
 
-    Route::resource('jabatan', JabatanController::class);
-    Route::post('jabatan/destroy-bulk', [JabatanController::class, 'destroyBulk'])->name('jabatan.destroy-bulk');
+    Route::resource('registrationcertificate', RegistrationCertificateController::class);
+    Route::post('registrationcertificate/destroy-bulk', [RegistrationCertificateController::class, 'destroyBulk'])
+        ->name('registrationcertificate.destroy-bulk');
 
-    Route::resource('department', DepartementController::class);
-    Route::post('department/destroy-bulk', [DepartementController::class, 'destroyBulk'])->name('department.destroy-bulk');
+    Route::resource('license', LicenseController::class);
+    Route::post('license/destroy-bulk', [LicenseController::class, 'destroyBulk'])->name('license.destroy-bulk');
 
 });

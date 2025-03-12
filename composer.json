@@ -20,6 +20,7 @@
     "nesbot/carbon": "^3.8",
     "nunomaduro/termwind": "^2.0",
     "spatie/laravel-permission": "^6.0",
+    "stichoza/google-translate-php": "^5.2",
     "tightenco/ziggy": "^1.0"
   },
   "require-dev": {

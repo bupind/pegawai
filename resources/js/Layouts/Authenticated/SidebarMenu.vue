@@ -26,13 +26,13 @@ const menus = [
         permission: null
     },
     {
-        label: "pegawai_management",
+        label: "employee_management",
         icon: NewspaperIcon,
         permission: null,
         submenus: [
-            {label: "departement", route: "department.index", permission: "departement read"},
-            {label: "jabatan", route: "jabatan.index", permission: "jabatan read"},
-            {label: "pegawai", route: "pegawai.index", permission: "pegawai read"},
+            {label: "employee", route: "employee.index", permission: "employee read"},
+            {label: "registrationcertificate", route: "registrationcertificate.index", permission: "registrationcertificate read"},
+            {label: "license", route: "license.index", permission: "license read"},
         ]
     },
     {

@@ -21,9 +21,6 @@
     "dependencies": {
         "@headlessui/vue": "^1.7.12",
         "@heroicons/vue": "^2.0.16",
-        "@tiptap/core": "^2.11.5",
-        "@tiptap/starter-kit": "^2.11.5",
-        "@tiptap/vue-3": "^2.11.5",
         "@vueform/multiselect": "^2.6.11",
         "@vuepic/vue-datepicker": "^8.8.1",
         "@vueup/vue-quill": "^1.2.0",
@@ -31,9 +28,7 @@
         "chart.js": "^3.9.1",
         "floating-vue": "^2.0.0-beta.20",
         "lodash": "^4.17.21",
-        "primeicons": "^7.0.0",
         "quill": "^2.0.3",
-        "vue-chart-3": "^3.1.8",
         "vue-json-viewer": "^3.0.4",
         "vue-multiselect": "^3.2.0",
         "vue3-lottie": "^2.7.0"

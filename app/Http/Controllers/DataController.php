@@ -2,37 +2,41 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Departemen;
-use App\Models\Jabatan;
-use App\Models\User;
+use App\Models\Employee;
+use App\Models\RegistrationCertificate;
 use Illuminate\Http\Request;
 
 class DataController extends Controller
 {
-    public function users(Request $request)
+    public function employees(Request $request)
     {
-        $query = User::whereHas('submissions')->select('id', 'first_name', 'last_name');
-
-        if($request->has('company_id')) {
-            $query->where('company_id', $request->company_id);
+        $query = Employee::active()->select('id', 'code', 'name');
+        if($request->has('gender')) {
+            $query->where('gender', $request->gender);
         }
-        $users = $query->get()->map(function($user) {
+        $data = $query->get()->map(function($val) {
             return [
-                'name' => $user->first_name . ' ' . $user->last_name,
-                'id'   => $user->id,
+                'name' => $val->code . ' ' . $val->name,
+                'id'   => $val->id,
             ];
         });
 
-        return response()->json($users);
+        return response()->json($data);
     }
 
-    public function jabatan()
+    public function certificates(Request $request)
     {
-        return response()->json(Jabatan::active()->select('id', 'name')->get());
-    }
+        $query = RegistrationCertificate::active()->select('id', 'type', 'competence');
+        if($request->has('type')) {
+            $query->where('type', $request->type);
+        }
+        $data = $query->get()->map(function($val) {
+            return [
+                'name' => $val->type . ' ' . $val->competence,
+                'id'   => $val->id,
+            ];
+        });
 
-    public function department()
-    {
-        return response()->json(Departemen::active()->select('id', 'name')->get());
+        return response()->json($data);
     }
 }

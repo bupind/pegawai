@@ -33,24 +33,20 @@ class RoleSeeder extends Seeder
             'setting read',
 
 
+            'employee create',
+            'employee read',
+            'employee update',
+            'employee delete',
 
+            'license create',
+            'license read',
+            'license update',
+            'license delete',
 
-
-
-            'departement create',
-            'departement read',
-            'departement update',
-            'departement delete',
-
-            'jabatan create',
-            'jabatan read',
-            'jabatan update',
-            'jabatan delete',
-
-            'pegawai create',
-            'pegawai read',
-            'pegawai update',
-            'pegawai delete',
+            'registrationcertificate create',
+            'registrationcertificate read',
+            'registrationcertificate update',
+            'registrationcertificate delete',
         ]);
         $admin = Role::create([
             'name'       => 'pegawai',

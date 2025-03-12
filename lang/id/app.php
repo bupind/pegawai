@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 return [
     'label'       => [
         'documentation'                           => 'Dokumentasi',
@@ -13,7 +11,7 @@ return [
         'remember_me'                             => 'Ingat saya',
         'forgot_your_password'                    => 'Lupa kata sandi Anda?',
         'register'                                => 'Daftar',
-        'register_caption'                        => "Bergabunglah dengan sistem kami. Mari kita membuat pekerjaan yang hebat bersama.",
+        'register_caption'                        => 'Bergabunglah dengan sistem kami. Mari kita membuat pekerjaan yang hebat bersama.',
         'welcome'                                 => 'Selamat Datang',
         'first_name'                              => 'Nama Depan',
         'last_name'                               => 'Nama Belakang',
@@ -37,7 +35,7 @@ return [
         'use_authentication_code'                 => 'Gunakan kode otentikasi',
         'email_verification'                      => 'Verifikasi Email',
         'verify_email'                            => 'Verifikasi Email',
-        'verify_email_caption'                    => "Sebelum melanjutkan, bisakah Anda memverifikasi alamat email Anda dengan mengklik tautan yang baru saja kami kirim melalui email? Jika Anda tidak menerima email tersebut, kami akan dengan senang hati mengirimkan email baru.",
+        'verify_email_caption'                    => 'Sebelum melanjutkan, bisakah Anda memverifikasi alamat email Anda dengan mengklik tautan yang baru saja kami kirim melalui email? Jika Anda tidak menerima email tersebut, kami akan dengan senang hati mengirimkan email baru.',
         'email_verification_link'                 => 'Tautan verifikasi baru telah dikirim ke alamat email yang Anda berikan di pengaturan profil Anda.',
         'edit_profile'                            => 'Ubah Profil',
         'logout'                                  => 'Keluar',
@@ -53,7 +51,7 @@ return [
         'manage_api_tokens_caption'               => 'Anda dapat menghapus token yang ada jika tidak lagi dibutuhkan.',
         'last_used'                               => 'Terakhir digunakan',
         'api_token'                               => 'Token API',
-        'api_token_caption'                       => "Harap salin token API baru Anda. Untuk keamanan Anda, itu tidak akan ditampilkan lagi.",
+        'api_token_caption'                       => 'Harap salin token API baru Anda. Untuk keamanan Anda, itu tidak akan ditampilkan lagi.',
         'api_token_permissions'                   => 'Hak Akses Token API',
         'delete_api_token'                        => 'Hapus Token API',
         'delete_api_token_caption'                => 'Anda yakin ingin menghapus token API ini?',
@@ -70,7 +68,7 @@ return [
         'logout_other_browser_session'            => 'Logout Sesi Browser Lain',
         'browser_session_caption'                 => 'Masukkan kata sandi Anda untuk mengonfirmasi bahwa Anda ingin logout dari sesi browser lain di semua perangkat Anda.',
         'profile_information'                     => 'Informasi Profil',
-        'profile_information_description'         => "Perbarui informasi profil akun Anda dan alamat email.",
+        'profile_information_description'         => 'Perbarui informasi profil akun Anda dan alamat email.',
         'photo'                                   => 'Foto',
         'email_address_is_unverified'             => 'Alamat email Anda belum terverifikasi.',
         'click_here_to_resend_verification_email' => 'Klik di sini untuk mengirim ulang email verifikasi.',
@@ -85,9 +83,9 @@ return [
         'two_factor_auth_enabled'                 => 'Anda telah mengaktifkan otentikasi dua faktor.',
         'two_factor_auth_enabling'                => 'Selesaikan mengaktifkan otentikasi dua faktor.',
         'two_factor_auth_not_enabled'             => 'Anda belum mengaktifkan otentikasi dua faktor.',
-        'two_factor_auth_caption'                 => "Ketika autentikasi dua faktor diaktifkan, Anda akan diminta untuk memasukkan token acak dan aman selama proses autentikasi. Anda dapat mengambil token ini dari aplikasi Google Authenticator di telepon Anda.",
-        'two_factor_auth_finish'                  => "Untuk menyelesaikan pengaktifan autentikasi dua faktor, pindai kode QR berikut menggunakan aplikasi autentikasi di telepon Anda atau masukkan kunci pengaturan dan berikan kode OTP yang dihasilkan.",
-        'two_factor_auth_now_enabled'             => "Autentikasi dua faktor sekarang diaktifkan. Pindai kode QR berikut menggunakan aplikasi autentikasi di telepon Anda atau masukkan kunci pengaturan.",
+        'two_factor_auth_caption'                 => 'Ketika autentikasi dua faktor diaktifkan, Anda akan diminta untuk memasukkan token acak dan aman selama proses autentikasi. Anda dapat mengambil token ini dari aplikasi Google Authenticator di telepon Anda.',
+        'two_factor_auth_finish'                  => 'Untuk menyelesaikan pengaktifan autentikasi dua faktor, pindai kode QR berikut menggunakan aplikasi autentikasi di telepon Anda atau masukkan kunci pengaturan dan berikan kode OTP yang dihasilkan.',
+        'two_factor_auth_now_enabled'             => 'Autentikasi dua faktor sekarang diaktifkan. Pindai kode QR berikut menggunakan aplikasi autentikasi di telepon Anda atau masukkan kunci pengaturan.',
         'two_factor_auth_recovery_code'           => 'Simpan kode pemulihan ini di pengelola kata sandi yang aman. Kode ini dapat digunakan untuk memulihkan akses ke akun Anda jika perangkat autentikasi dua faktor Anda hilang.',
         'build_with'                              => 'Dibangun dengan',
         'by'                                      => 'oleh',
@@ -136,11 +134,15 @@ return [
         'departement'                             => 'Departement',
         'jabatan'                                 => 'jabatan',
         'user_management'                         => 'Manajemen Pengguna',
-        'pegawai_management'                      => 'Manajemen Pegawai',
+        'employee_management'                     => 'Manajemen Pegawai',
         'name'                                    => 'Nama',
         'status'                                  => 'Status',
         'statusepe'                               => 'Status Kepegawaian',
         'phone_number'                            => 'No. Telp',
+        'something'                               => 'Sesuatu',
+        'employee'                                => 'Karyawan',
+        'license'                                 => 'Lisensi',
+        'registrationcertificate'                 => 'Sertifikat Pendaftaran',
     ],
     'placeholder' => [
         'email'           => 'email@email.com',

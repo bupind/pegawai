@@ -28,6 +28,8 @@ const fetchData = async () => {
         }
 
         const response = await axios.get(url);
+        console.log(response)
+
         options.value = response.data.map(item => ({
             label: item.name,
             value: item.id
@@ -75,7 +77,7 @@ watch(() => options.value, () => {
             :searchable="true"
             :clearable="true"
             :disabled="loading || !options.length"
-            :classes="{option: 'hover:bg-gray-200 dark:hover:bg-slate-700 bg-white dark:bg-slate-800 px-3 py-2'}" class="bg-white dark:bg-slate-800"
+            :classes="{option: 'hover:bg-gray-200 dark:hover:bg-slate-700 bg-white dark:bg-slate-800 text-gray-700 dark:text-white px-3 py-2'}" class="bg-white dark:bg-slate-800 text-gray-700 dark:text-white"
             @update:model-value="$emit('update:modelValue', $event)"
     />
 </template>

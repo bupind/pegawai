@@ -29,19 +29,19 @@ class PermissionSeeder extends Seeder
 
         Permission::create(['name' => 'setting read', 'guard_name' => 'web']);
 
-        Permission::create(['name' => 'departement create', 'guard_name' => 'web']);
-        Permission::create(['name' => 'departement read', 'guard_name' => 'web']);
-        Permission::create(['name' => 'departement update', 'guard_name' => 'web']);
-        Permission::create(['name' => 'departement delete', 'guard_name' => 'web']);
+        Permission::create(['name' => 'employee create', 'guard_name' => 'web']);
+        Permission::create(['name' => 'employee read', 'guard_name' => 'web']);
+        Permission::create(['name' => 'employee update', 'guard_name' => 'web']);
+        Permission::create(['name' => 'employee delete', 'guard_name' => 'web']);
 
-        Permission::create(['name' => 'jabatan create', 'guard_name' => 'web']);
-        Permission::create(['name' => 'jabatan read', 'guard_name' => 'web']);
-        Permission::create(['name' => 'jabatan update', 'guard_name' => 'web']);
-        Permission::create(['name' => 'jabatan delete', 'guard_name' => 'web']);
+        Permission::create(['name' => 'license create', 'guard_name' => 'web']);
+        Permission::create(['name' => 'license read', 'guard_name' => 'web']);
+        Permission::create(['name' => 'license update', 'guard_name' => 'web']);
+        Permission::create(['name' => 'license delete', 'guard_name' => 'web']);
 
-        Permission::create(['name' => 'pegawai create', 'guard_name' => 'web']);
-        Permission::create(['name' => 'pegawai read', 'guard_name' => 'web']);
-        Permission::create(['name' => 'pegawai update', 'guard_name' => 'web']);
-        Permission::create(['name' => 'pegawai delete', 'guard_name' => 'web']);
+        Permission::create(['name' => 'registrationcertificate create', 'guard_name' => 'web']);
+        Permission::create(['name' => 'registrationcertificate read', 'guard_name' => 'web']);
+        Permission::create(['name' => 'registrationcertificate update', 'guard_name' => 'web']);
+        Permission::create(['name' => 'registrationcertificate delete', 'guard_name' => 'web']);
     }
 }

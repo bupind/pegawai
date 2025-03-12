@@ -15,7 +15,19 @@ class {{modelName}} extends Model
         'name',
         'status',
     ];
+    const STATUS_ACTIVE   = 'active';
+    const STATUS_INACTIVE = 'inactive';
 
+    public static function statuses(): array
+    {
+        return [
+            self::STATUS_ACTIVE   => __('Active'),
+            self::STATUS_INACTIVE => __('Inactive'),
+        ];
+    }
+    public function scopeActive($query) {
+        return $query->where('status', self::STATUS_ACTIVE);
+    }
     public function getCreatedAtAttribute()
     {
         return Carbon::parse($this->attributes['created_at'])->isoFormat('D MMMM Y HH:mm');
@@ -25,12 +37,7 @@ class {{modelName}} extends Model
     {
         return Carbon::parse($this->attributes['updated_at'])->isoFormat('D MMMM Y HH:mm');
     }
-    
-    /**
-     * Get the user that owns the Setting
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

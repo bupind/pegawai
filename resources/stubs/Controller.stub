@@ -12,15 +12,13 @@ use Inertia\Inertia;
 class {{modelName}}Controller extends Controller
 {
     public function __construct()
-    {
-        $this->middleware('permission:{{modelNameLowerCase}} create', ['only' => ['create', 'store']]);
-        $this->middleware('permission:{{modelNameLowerCase}} read', ['only' => ['index', 'show']]);
-        $this->middleware('permission:{{modelNameLowerCase}} update', ['only' => ['edit', 'update']]);
-        $this->middleware('permission:{{modelNameLowerCase}} delete', ['only' => ['destroy', 'destroyBulk']]);
-    }
-    /**
-     * Display a listing of the resource.
-     */
+{
+    $this->middleware('permission:{{modelNameLowerCase}} create', ['only' => ['create', 'store']]);
+    $this->middleware('permission:{{modelNameLowerCase}} read', ['only' => ['index', 'show']]);
+    $this->middleware('permission:{{modelNameLowerCase}} update', ['only' => ['edit', 'update']]);
+    $this->middleware('permission:{{modelNameLowerCase}} delete', ['only' => ['destroy', 'destroyBulk']]);
+}
+
     public function index({{modelName}}IndexRequest $request)
     {
         ${{modelNamePluralLowerCase}} = {{modelName}}::query();
@@ -35,22 +33,14 @@ class {{modelName}}Controller extends Controller
             'title'         => "{{modelName}}",
             'filters'       => $request->all(['search', 'field', 'order']),
             'perPage'       => (int) $perPage,
+            'statuses'    => {{modelName}}::statuses(),
             '{{modelNamePluralLowerCase}}'   => ${{modelNamePluralLowerCase}}->with('user')->paginate($perPage)->onEachSide(0),
             'breadcrumbs'   => [['label' => "{{modelName}}", 'href' => route('{{modelNameLowerCase}}.index')]],
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
+    public function create() {}
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store({{modelName}}StoreRequest $request)
     {
         try {
@@ -65,25 +55,10 @@ class {{modelName}}Controller extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show({{modelName}} ${{modelNameLowerCase}})
-    {
-        //
-    }
+    public function show({{modelName}} ${{modelNameLowerCase}}){}
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit({{modelName}} ${{modelNameLowerCase}})
-    {
-        //
-    }
+    public function edit({{modelName}} ${{modelNameLowerCase}}){}
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update({{modelName}}UpdateRequest $request, {{modelName}} ${{modelNameLowerCase}})
     {
         try {
@@ -98,9 +73,6 @@ class {{modelName}}Controller extends Controller
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy({{modelName}} ${{modelNameLowerCase}})
     {
         try {
@@ -112,13 +84,13 @@ class {{modelName}}Controller extends Controller
     }
 
     public function destroyBulk(Request $request)
-    {
-        try {
-            ${{modelNamePluralLowerCase}} = {{modelName}}::whereIn('id', $request->id);
+{
+    try {
+        ${{modelNamePluralLowerCase}} = {{modelName}}::whereIn('id', $request->id);
             ${{modelNamePluralLowerCase}}->delete();
             return back()->with('success', __('app.label.deleted_successfully', ['name' => count($request->id) . ' ' . "{{modelName}}"]));
         } catch (\Throwable $th) {
-            return back()->with('error', __('app.label.deleted_error', ['name' => count($request->id) . ' ' . "{{modelName}}"]) . $th->getMessage());
-        }
+        return back()->with('error', __('app.label.deleted_error', ['name' => count($request->id) . ' ' . "{{modelName}}"]) . $th->getMessage());
     }
+}
 }
