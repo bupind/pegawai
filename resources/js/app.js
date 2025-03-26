@@ -10,8 +10,6 @@ import FloatingVue from "floating-vue";
 import Vue3Lottie from "vue3-lottie";
 import "vue3-lottie/dist/style.css";
 import JsonViewer from 'vue-json-viewer'
-import "ag-grid-community/styles/ag-grid.css";
-import "ag-grid-community/styles/ag-theme-alpine.css";
 
 
 const appName = window.document.getElementsByTagName("title")[0]?.innerText || "Laravel";

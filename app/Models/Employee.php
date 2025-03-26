@@ -60,4 +60,14 @@ class Employee extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function certificates()
+    {
+        return $this->hasMany(RegistrationCertificate::class, 'employeeId');
+    }
+
+    public function licenses()
+    {
+        return $this->hasMany(License::class, 'employeeId');
+    }
 }

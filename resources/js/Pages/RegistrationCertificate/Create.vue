@@ -63,7 +63,7 @@ const closeModal = () => {
             <template #content>
                 <form class="space-y-2" @submit.prevent="submit">
                     <div class="space-y-1">
-                        <InputLabel :value="lang().label.employeeId" for="employeeId"/>
+                        <InputLabel :value="lang().label.Employee" for="employeeId"/>
                         <DropdownLoader
                                 v-model="form.employeeId"
                                 apiUrl="dropdown/employees"

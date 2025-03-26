@@ -35,7 +35,7 @@ class RegistrationCertificateController extends Controller
             'perPage'     => (int)$perPage,
             'statuses'    => RegistrationCertificate::statuses(),
             'types'       => RegistrationCertificate::types(),
-            'datas'       => $registrationcertificates->with('user')->paginate($perPage)->onEachSide(0),
+            'datas'       => $registrationcertificates->with(['user', 'employee'])->paginate($perPage)->onEachSide(0),
             'breadcrumbs' => [
                 [
                     'label' => __('app.label.registrationcertificate'),

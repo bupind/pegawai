@@ -73,7 +73,7 @@ const select = () => {
 };
 const headers = [
     {label: 'Code', ordered: 'code'},
-    {label: 'Name', ordered: 'name'},
+    {label: 'Employee', ordered: 'name'},
     {label: 'Gender', ordered: 'status'},
     {label: 'Status', ordered: 'status'},
     // {label: 'created', ordered: 'created_at'},

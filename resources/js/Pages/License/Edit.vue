@@ -3,6 +3,7 @@ import DialogModal from "@/Components/DialogModal.vue";
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import SelectInput from "@/Components/SelectInput.vue";
+import DropdownLoader from "@/Components/DropdownLoader.vue";
 import ActionButton from "@/Components/ActionButton.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
@@ -79,22 +80,22 @@ const closeModal = () => {
             <template #content>
                 <form class="space-y-2" @submit.prevent="submit">
                     <div class="space-y-1">
-                        <InputLabel :value="lang().label.employeeId" for="employeeId"/>
+                        <InputLabel :value="lang().label.employee" for="employeeId"/>
                         <DropdownLoader
-                                v-model="form.employeeId"
-                                apiUrl="dropdown/employees"
-                                placeholder="Pilih Salah Satu"
-                                :error="form.errors.employeeId"
+                            v-model="form.employeeId"
+                            apiUrl="dropdown/employees"
+                            placeholder="Pilih Salah Satu"
+                            :error="form.errors.employeeId"
                         />
                         <InputError :message="form.errors.employeeId"/>
                     </div>
                     <div class="space-y-1">
-                        <InputLabel :value="lang().label.registrationCertificateId" for="registrationCertificateId"/>
+                        <InputLabel :value="lang().label.registrationCertificate" for="registrationCertificateId"/>
                         <DropdownLoader
-                                v-model="form.registrationCertificateId"
-                                apiUrl="dropdown/certificates"
-                                placeholder="Pilih Salah Satu"
-                                :error="form.errors.registrationCertificateId"
+                            v-model="form.registrationCertificateId"
+                            apiUrl="dropdown/certificates"
+                            placeholder="Pilih Salah Satu"
+                            :error="form.errors.registrationCertificateId"
                         />
                         <InputError :message="form.errors.registrationCertificateId"/>
                     </div>
@@ -174,6 +175,7 @@ const closeModal = () => {
                     </div>
                 </form>
             </template>
+
 
             <template #footer>
                 <SecondaryButton @click="closeModal">

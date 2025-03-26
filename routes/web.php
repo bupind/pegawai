@@ -46,6 +46,9 @@ Route::prefix('system')->middleware([
     });
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/employee', [DashboardController::class, 'employee'])->name('dashboard.employee');
+    Route::get('/dashboard/certificates', [DashboardController::class, 'certificates'])->name('dashboard.certificates');
+    Route::get('/dashboard/licenses', [DashboardController::class, 'licenses'])->name('dashboard.licenses');
 
     Route::resource('admin', AdminController::class);
     Route::post('admin/destroy-bulk', [AdminController::class, 'destroyBulk'])->name('admin.destroy-bulk');

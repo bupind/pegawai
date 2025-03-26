@@ -130,3 +130,6 @@ input[type="password"]::-ms-reveal,
 input[type="password"]::-ms-clear {
     @apply dark:invert;
 }
+.space-x-2 > :not([hidden]) ~ :not([hidden]) {
+    margin-left: 2px;
+}

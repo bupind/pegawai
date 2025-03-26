@@ -60,7 +60,7 @@ const closeModal = () => {
             <template #content>
                 <form class="space-y-2" @submit.prevent="submit">
                     <div class="space-y-1">
-                        <InputLabel :value="lang().label.employeeId" for="employeeId"/>
+                        <InputLabel :value="lang().label.employee" for="employeeId"/>
                         <DropdownLoader
                                 v-model="form.employeeId"
                                 apiUrl="dropdown/employees"
@@ -70,7 +70,7 @@ const closeModal = () => {
                         <InputError :message="form.errors.employeeId"/>
                     </div>
                     <div class="space-y-1">
-                        <InputLabel :value="lang().label.registrationCertificateId" for="registrationCertificateId"/>
+                        <InputLabel :value="lang().label.registrationCertificate" for="registrationCertificateId"/>
                         <DropdownLoader
                                 v-model="form.registrationCertificateId"
                                 apiUrl="dropdown/certificates"

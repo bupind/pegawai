@@ -64,4 +64,8 @@ class RegistrationCertificate extends Model
     {
         return $this->belongsTo(User::class, 'registered_by');
     }
+    public function employee(): BelongsTo
+    {
+        return $this->belongsTo(Employee::class, 'employeeId');
+    }
 }
