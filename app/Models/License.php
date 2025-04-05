@@ -14,6 +14,7 @@ class License extends Model
     const STATUS_INACTIVE = 'inactive';
     const TYPE_NURSE      = 'nurse';
     const TYPE_DOCTOR     = 'doctor';
+    const TYPE_MEDICAL    = 'medical';
 
     protected $table    = 'license';
     protected $fillable = [
@@ -31,16 +32,17 @@ class License extends Model
     public static function statuses()
     {
         return [
-            self::STATUS_ACTIVE   => __('Active'),
-            self::STATUS_INACTIVE => __('Inactive'),
+            self::STATUS_ACTIVE   => __('Aktif'),
+            self::STATUS_INACTIVE => __('Tidak Aktif'),
         ];
     }
 
     public static function types()
     {
         return [
-            self::TYPE_NURSE  => __('Nurse'),
-            self::TYPE_DOCTOR => __('Doctor'),
+            self::TYPE_NURSE  => __('Perawat'),
+            self::TYPE_DOCTOR => __('Dokter'),
+            self::TYPE_MEDICAL => __('Penunjang Medis'),
         ];
     }
 

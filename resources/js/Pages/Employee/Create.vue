@@ -65,8 +65,8 @@ const closeModal = () => {
                                 type="text"
                                 class="block w-full"
                                 autocomplete="code"
-                                :placeholder="lang().label.code"
-                                :error="form.errors.code"
+                                :placeholder="lang().label.Code"
+                                :error="form.errors.Code"
                         />
                         <InputError :message="form.errors.code"/>
                     </div>

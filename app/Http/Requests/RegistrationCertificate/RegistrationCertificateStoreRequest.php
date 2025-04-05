@@ -14,8 +14,12 @@ class RegistrationCertificateStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'employeeId'         => 'required',
             'type'               => 'required',
             'registrationNumber' => 'required',
+            'validFrom'          => 'required',
+            'validUntil'         => 'required',
+            'status'             => 'required',
         ];
     }
 }

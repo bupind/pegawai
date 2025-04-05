@@ -147,7 +147,7 @@ return [
         'license'                                 => 'License',
         'certificate'                             => 'Certificate',
         'registrationcertificate'                 => 'Registration Certificate',
-        'Code'                                    => 'Code',
+        'Code'                                    => 'NRP/NIK',
         'Employee'                                => 'Name',
         'Gender'                                  => 'Gender',
         'Status'                                  => 'Status',

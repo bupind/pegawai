@@ -87,12 +87,6 @@ watch(
                         <ChevronUpDownIcon class="w-4 h-4" />
                     </div>
                 </th>
-                <th class="p-4 cursor-pointer" @click="order('recommendationNumberAssociation')">
-                    <div class="flex justify-between items-center">
-                        <span>{{ lang().label.recommendationNumberAssociation }}</span>
-                        <ChevronUpDownIcon class="w-4 h-4" />
-                    </div>
-                </th>
                 <th class="p-4 cursor-pointer" @click="order('recommendationNumber')">
                     <div class="flex justify-between items-center">
                         <span>{{ lang().label.recommendationNumber }}</span>
@@ -134,7 +128,6 @@ watch(
                     <td class="whitespace-nowrap px-4 py-1">{{ data.employee?.name || '-' }}</td>
                     <td class="whitespace-nowrap px-4 py-1">{{ props.types[data.type] || '-' }}</td>
                     <td class="whitespace-nowrap px-4 py-1">{{ data.registrationNumber || '-' }}</td>
-                    <td class="whitespace-nowrap px-4 py-1">{{ data.recommendationNumberAssociation || '-' }}</td>
                     <td class="whitespace-nowrap px-4 py-1">{{ data.recommendationNumber || '-' }}</td>
                     <td class="whitespace-nowrap px-4 py-1">{{ data.validFrom || '-' }}</td>
                     <td class="whitespace-nowrap px-4 py-1">{{ data.validUntil || '-' }}</td>

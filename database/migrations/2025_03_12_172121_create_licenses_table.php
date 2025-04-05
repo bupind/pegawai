@@ -14,7 +14,6 @@ return new class extends Migration {
             $table->unsignedBigInteger('registrationCertificateId');
             $table->string('type', 50);
             $table->string('registrationNumber')->unique();
-            $table->string('recommendationNumberAssociation')->nullable();
             $table->string('recommendationNumber')->nullable();
             $table->date('validFrom');
             $table->date('validUntil');

@@ -65,7 +65,7 @@ class DashboardController extends Controller
         return Inertia::render('Dashboard/Dashboard', [
             'userRole'      => $role,
             'lineChartData' => [
-                ['name' => 'Total Employee', 'data' => $formattedEmployees],
+                ['name' => 'Total Pegawai', 'data' => $formattedEmployees],
                 ['name' => 'Total Registration Certificate', 'data' => $formattedCertificates],
                 ['name' => 'Total License', 'data' => $formattedLicenses],
             ],
@@ -157,7 +157,7 @@ class DashboardController extends Controller
                 ],
             ],
             'lineChartData' => [
-                ['name' => 'Total Employee', 'data' => $formattedEmployees],
+                ['name' => 'Total Pegawai', 'data' => $formattedEmployees],
             ],
             'genders'       => Employee::genders(),
             'statuses'      => Employee::statuses(),
@@ -211,7 +211,7 @@ class DashboardController extends Controller
                 ],
             ],
             'lineChartData'    => [
-                ['name' => 'Total Registration Certificate', 'data' => $formattedCertificates],
+                ['name' => 'Total Surat Tanda Registrasi', 'data' => $formattedCertificates],
             ],
             'certificateTable' => $certificateTable,
             'types'            => RegistrationCertificate::types(),

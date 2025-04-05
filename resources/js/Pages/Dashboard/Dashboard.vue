@@ -73,7 +73,7 @@ const LayoutComponent = computed(() => {
                 <div v-if="lineChartData" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 mt-2">
                     <div class="col-span-12 bg-white dark:bg-slate-800 p-6 shadow-md rounded-md">
                         <div class="flex justify-between items-center mb-4">
-                            <h2 class="text-xl font-semibold capitalize text-start">Total Employee</h2>
+                            <h2 class="text-xl font-semibold capitalize text-start">Total {{ lang().label.employee }}</h2>
                         </div>
 
                         <LineChart :data="lineChartData" />

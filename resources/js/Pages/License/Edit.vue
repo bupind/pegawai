@@ -26,7 +26,6 @@ const form = useForm({
     registrationCertificateId: "",
     type: "",
     registrationNumber: "",
-    recommendationNumberAssociation: "",
     recommendationNumber: "",
     validFrom: "",
     validUntil: "",
@@ -40,7 +39,6 @@ onUpdated(() => {
         form.registrationCertificateId = props.license?.registrationCertificateId;
         form.type = props.license?.type;
         form.registrationNumber = props.license?.registrationNumber;
-        form.recommendationNumberAssociation = props.license?.recommendationNumberAssociation;
         form.recommendationNumber = props.license?.recommendationNumber;
         form.validFrom = props.license?.validFrom;
         form.validUntil = props.license?.validUntil;
@@ -108,29 +106,15 @@ const closeModal = () => {
                         />
                         <InputError :message="form.errors.type"/>
                     </div>
-                    <div class="flex gap-1">
-                        <div class="w-1/2">
-                            <InputLabel for="registrationNumber" :value="lang().label.registrationNumber"/>
-                            <TextInput id="registrationNumber" v-model="form.registrationNumber"
-                                       :error="form.errors.registrationNumber"
-                                       :placeholder="lang().placeholder.cluster"
-                                       autocomplete="off" class="block w-full"
-                                       type="text"
-                            />
-                            <InputError :message="form.errors.registrationNumber"/>
-                        </div>
-                        <div class="w-1/2">
-                            <InputLabel for="recommendationNumberAssociation"
-                                        :value="lang().label.recommendationNumberAssociation"/>
-                            <TextInput id="recommendationNumberAssociation"
-                                       v-model="form.recommendationNumberAssociation"
-                                       :error="form.errors.recommendationNumberAssociation"
-                                       :placeholder="lang().placeholder.recommendationNumberAssociation"
-                                       autocomplete="off" class="block w-full"
-                                       type="text"
-                            />
-                            <InputError :message="form.errors.recommendationNumberAssociation"/>
-                        </div>
+                    <div class="space-y-1">
+                        <InputLabel for="registrationNumber" :value="lang().label.registrationNumber"/>
+                        <TextInput id="registrationNumber" v-model="form.registrationNumber"
+                                   :error="form.errors.registrationNumber"
+                                   :placeholder="lang().placeholder.cluster"
+                                   autocomplete="off" class="block w-full"
+                                   type="text"
+                        />
+                        <InputError :message="form.errors.registrationNumber"/>
                     </div>
                     <div class="space-y-1">
                         <InputLabel for="recommendationNumber" :value="lang().label.recommendationNumber"/>

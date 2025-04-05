@@ -28,16 +28,16 @@ class Employee extends Model
     public static function statuses(): array
     {
         return [
-            self::STATUS_ACTIVE   => __('Active'),
-            self::STATUS_INACTIVE => __('Inactive'),
+            self::STATUS_ACTIVE   => __('Aktif'),
+            self::STATUS_INACTIVE => __('Tidak Aktif'),
         ];
     }
 
     public static function genders(): array
     {
         return [
-            self::GENDER_MALE   => __('Male'),
-            self::GENDER_FEMALE => __('Female'),
+            self::GENDER_MALE   => __('Laki Laki'),
+            self::GENDER_FEMALE => __('Perempuan'),
         ];
     }
 

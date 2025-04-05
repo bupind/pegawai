@@ -14,8 +14,12 @@ class LicenseUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'type'                      => 'required',
             'employeeId'                => 'required',
             'registrationCertificateId' => 'required',
+            'validFrom'                 => 'required',
+            'validUntil'                => 'required',
+            'status'                    => 'required',
         ];
     }
 }

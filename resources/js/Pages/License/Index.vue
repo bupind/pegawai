@@ -76,7 +76,6 @@ const headers = [
     {label: 'RegistrationCertificate', ordered: 'registrationCertificateId'},
     {label: 'Type', ordered: 'type'},
     {label: 'RegistrationNumber', ordered: 'registrationNumber'},
-    {label: 'RecommendationNumberAssociation', ordered: 'recommendationNumberAssociation'},
     {label: 'RecommendationNumber', ordered: 'recommendationNumber'},
     {label: 'ValidFrom', ordered: 'validFrom'},
     {label: 'ValidUntil', ordered: 'validUntil'},
@@ -89,12 +88,10 @@ const bodys = [
     {label: 'RegistrationCertificate', value: (val) => val?.certificate?.registrationNumber || '-'},
     {label: 'Type', value: (val) => props.types[val.type] || '-'},
     {label: 'RegistrationNumber', value: (val) => val.registrationNumber || '-'},
-    {label: 'RecommendationNumberAssociation', value: (val) => val.recommendationNumberAssociation || '-'},
     {label: 'RecommendationNumber', value: (val) => val.recommendationNumber || '-'},
     {label: 'ValidFrom', value: (val) => val.validFrom || '-'},
     {label: 'ValidUntil', value: (val) => val.validUntil || '-'},
     {label: 'status', value: (val) => props.statuses[val.status] || '-'},
-    // {label: 'created', value: (val) => val.employee?.created_at || '-'},
 ];
 
 
