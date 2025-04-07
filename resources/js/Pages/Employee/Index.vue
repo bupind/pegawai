@@ -7,12 +7,13 @@ import TablePagination from "@/Components/TablePagination.vue";
 import TextInput from "@/Components/TextInput.vue";
 import Create from "@/Pages/Employee/Create.vue";
 import Edit from "@/Pages/Employee/Edit.vue";
+import View from "@/Pages/Employee/View.vue";
 import Delete from "@/Pages/Employee/Delete.vue";
 import DeleteBulk from "@/Pages/Employee/DeleteBulk.vue";
-import {reactive, watch} from "vue";
+import {reactive, ref, watch} from "vue";
 import pkg from "lodash";
 import {router} from "@inertiajs/vue3";
-import {ChevronUpDownIcon} from "@heroicons/vue/24/outline";
+import {ChevronUpDownIcon, MagnifyingGlassIcon} from "@heroicons/vue/24/outline";
 import Checkbox from "@/Components/Checkbox.vue";
 
 const {_, debounce, pickBy} = pkg;
@@ -25,7 +26,10 @@ const props = defineProps({
     genders: Object,
     perPage: Number,
 });
-
+const showSearch = ref(false);
+const toggleSearch = () => {
+    showSearch.value = !showSearch.value;
+};
 const data = reactive({
     params: {
         search: props.filters.search,
@@ -41,19 +45,26 @@ const data = reactive({
 const order = (field) => {
     data.params.field = field;
     data.params.order = data.params.order === "asc" ? "desc" : "asc";
-};
 
+    let params = pickBy(data.params);
+    router.get(route("employee.index"), params, {
+        replace: false,
+        preserveState: true,
+        preserveScroll: true,
+    });
+};
 watch(
     () => _.cloneDeep(data.params),
     debounce(() => {
         let params = pickBy(data.params);
         router.get(route("employee.index"), params, {
-            replace: true,
+            replace: false,
             preserveState: true,
             preserveScroll: true,
         });
     }, 150)
 );
+
 
 const selectAll = (event) => {
     if (event.target.checked === false) {
@@ -74,9 +85,8 @@ const select = () => {
 const headers = [
     {label: 'Code', ordered: 'code'},
     {label: 'Employee', ordered: 'name'},
-    {label: 'Gender', ordered: 'status'},
+    {label: 'Gender', ordered: 'gender'},
     {label: 'Status', ordered: 'status'},
-    // {label: 'created', ordered: 'created_at'},
 ];
 
 const bodys = [
@@ -84,7 +94,6 @@ const bodys = [
     {label: 'Employee', value: (val) => val?.name || '-'},
     {label: 'Gender', value: (val) => props.genders[val.gender] || '-'},
     {label: 'status', value: (val) => props.statuses[val.status] || '-'},
-    // {label: 'created', value: (val) => val.employee?.created_at || '-'},
 ];
 
 
@@ -128,11 +137,6 @@ const bodys = [
                                                :placeholder="lang().placeholder.search"
                                                class="block h-9 transition-all duration-300"
                                                type="text"/>
-                                    <button class="flex items-center px-3 py-2 bg-green-500 text-white border border-green-600 rounded-r-md hover:bg-green-600"
-                                            @click="exportData('all')">
-                                        <ArrowDownTrayIcon class="w-5 h-5 mr-2"/>
-                                        <span class="text-sm">All</span>
-                                    </button>
                                 </div>
                             </div>
                         </template>
@@ -146,10 +150,17 @@ const bodys = [
                                     @click="col.ordered ? order(col.ordered) : null">
                                     <div class="flex justify-between items-center">
                                         <span>{{ lang().label[col.label] }}</span>
-                                        <ChevronUpDownIcon v-if="col.ordered" class="w-4 h-4"/>
+                                        <ChevronUpDownIcon
+                                            v-if="col.ordered"
+                                            :class="{
+        'rotate-180': data.params.field === col.ordered && data.params.order === 'desc',
+        'text-black-500': data.params.field === col.ordered,
+        'w-4 h-4': true,
+    }"
+                                        />
                                     </div>
                                 </th>
-                                <th class="p-4 text-center">Action</th>
+                                <th class="p-4 text-center w-10">Action</th>
                             </tr>
                         </template>
                         <template #table-body>
@@ -166,11 +177,12 @@ const bodys = [
                                 </td>
                                 <td class="whitespace-nowrap flex justify-end px-2 py-1">
                                     <div class="flex w-fit rounded overflow-hidden">
-
                                         <Edit v-show="can(['employee update'])" :title="props.title"
                                               :statuses="props.statuses" :genders="props.genders"
                                               :employee="data.employee" @open="data.employee = val"/>
-
+                                        <View v-show="can(['employee read'])" :title="props.title"
+                                              :statuses="props.statuses" :genders="props.genders"
+                                              :employee="data.employee" @open="data.employee = val"/>
                                         <Delete v-show="can(['employee delete'])" :title="props.title"
                                                 :employee="data.val" @open="data.employee = val"/>
                                     </div>

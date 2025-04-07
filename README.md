@@ -59,7 +59,7 @@ password : p4ssw0rd##
 ### Participant
 
 ```bash
-email : participant@company.com
+email : pegawai@company.com
 password : p4ssw0rd##
 ```
 

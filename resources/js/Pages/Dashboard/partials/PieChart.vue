@@ -1,41 +1,47 @@
-<!-- src/Components/Charts/PieChart.vue -->
 <template>
-    <div class="h-64">
-        <DoughnutChart v-if="chartData" :chart-data="chartData" :chart-options="chartOptions"/>
+    <div className="h-100 w-100">
+        <apexchart
+            type="pie"
+            :options="chartOptions"
+            :series="series"
+            @click="handleClick"
+        />
     </div>
 </template>
 
 <script setup>
-import {ref, watch} from "vue";
-import {DoughnutChart} from "vue-chart-3";
-import {Chart, registerables} from "chart.js";
+import {ref, watch} from 'vue'
 
-Chart.register(...registerables);
-
+const emit = defineEmits(['segmentClicked'])
 const props = defineProps({
-    data: Array
-});
-
-const chartData = ref(null);
-const chartOptions = ref({
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-        legend: {position: "bottom"}
+    data: {
+        type: Array,
+        default: () => [],
     }
-});
+})
+
+const series = ref([])
+const chartOptions = ref({
+    chart: {
+        type: 'pie',
+        events: {
+            dataPointSelection: (event, chartContext, config) => {
+                const label = chartOptions.value.labels[config.dataPointIndex]
+                emit('segmentClicked', label)
+            }
+        }
+    },
+    labels: [],
+    legend: {
+        position: 'bottom'
+    },
+    colors: ['#1D4ED8', '#FACC15', '#DC2626', '#FF6384', '#A1A1AA']
+})
 
 watch(() => props.data, (newData) => {
-    if (newData && newData.length) {
-        chartData.value = {
-            labels: newData.map(d => d.label),
-            datasets: [
-                {
-                    data: newData.map(d => d.value),
-                    backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF"]
-                }
-            ]
-        };
-    }
-}, {immediate: true});
+    if (!newData || !newData.length) return
+
+    series.value = newData.map(d => d.value)
+    chartOptions.value.labels = newData.map(d => d.label)
+}, {immediate: true})
 </script>

@@ -13,6 +13,7 @@ class RegistrationCertificate extends Model
 
     const STATUS_ACTIVE   = 'active';
     const STATUS_INACTIVE = 'inactive';
+    const STATUS_EXPIRED  = 'expired';
 
     const TYPE_NURSE   = 'nurse';
     const TYPE_DOCTOR  = 'doctor';
@@ -24,7 +25,6 @@ class RegistrationCertificate extends Model
         'type',
         'registrationNumber',
         'competence',
-        'certificateOfCompetenceNumber',
         'validFrom',
         'validUntil',
         'registered_by',
@@ -34,8 +34,9 @@ class RegistrationCertificate extends Model
     public static function statuses()
     {
         return [
-            self::STATUS_ACTIVE   => __('Aktif'),
-            self::STATUS_INACTIVE => __('Tidak Aktif'),
+            self::STATUS_ACTIVE   => __('Berlaku'),
+            self::STATUS_INACTIVE => __('Akan Kadaluarsa'),
+            self::STATUS_EXPIRED  => __('Tidak Berlaku'),
         ];
     }
 

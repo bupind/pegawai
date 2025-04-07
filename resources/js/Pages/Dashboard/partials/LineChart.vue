@@ -1,63 +1,69 @@
 <template>
-    <div className="chart-container">
-        <LineChart v-if="chartData" :chart-data="chartData" :chart-options="chartOptions"/>
+    <div className="h-64">
+        <apexchart
+                type="line"
+                :options="chartOptions"
+                :series="series"
+                height="100%"
+        />
     </div>
 </template>
 
 <script setup>
-import {computed} from "vue";
-import {LineChart} from "vue-chart-3";
-import {Chart, registerables} from "chart.js";
-
-Chart.register(...registerables);
+import {ref, watch} from "vue"
 
 const props = defineProps({
     data: Array
-});
-const colors = [
+})
+
+const baseColors = [
     "#36A2EB", "#FF6384", "#4BC0C0", "#FFCE56", "#9966FF",
     "#FF9F40", "#C9CBCF", "#00A676", "#B5A642", "#8A89A6"
-];
+]
 
-const chartData = computed(() => {
-    if (!props.data || !props.data.length) return null;
-
-    return {
-        labels: props.data[0]?.data.map(d => d.date) || [],
-        datasets: props.data.map((category, index) => ({
-            label: category.name,
-            data: category.data.map(d => d.total),
-            borderColor: colors[index % colors.length],
-            backgroundColor: colors[index % colors.length] + "33",
-            tension: 0.1,
-            pointRadius: 4,
-            pointHoverRadius: 6
-        }))
-    };
-});
-
-const chartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-        legend: { display: true, position: "top" },
-        tooltip: { enabled: true }
+const series = ref([])
+const chartOptions = ref({
+    chart: {
+        id: 'lineChart',
+        zoom: {enabled: false},
+        toolbar: {show: false}
     },
-    scales: {
-        x: {
-            title: { display: true, text: "Tanggal" },
-            grid: { display: false }
-        },
-        y: {
-            title: { display: true, text: "Total Submissions" },
-            beginAtZero: true,
-            suggestedMax: 5,
-            grid: { color: "#e5e7eb" },
-            ticks: {
-                stepSize: 1,   // Pastikan hanya bilangan bulat
-                precision: 0   // Hindari angka desimal
-            }
-        }
-    }
-};
+    stroke: {
+        curve: 'smooth',
+        width: 2
+    },
+    markers: {
+        size: 4,
+        hover: {sizeOffset: 2}
+    },
+    xaxis: {
+        type: 'category',
+        categories: [],
+        title: {text: 'Tanggal'}
+    },
+    yaxis: {
+        title: {text: ''},
+        min: 0,
+        forceNiceScale: true,
+        tickAmount: 5
+    },
+    tooltip: {
+        enabled: true
+    },
+    legend: {
+        position: 'top'
+    },
+    colors: baseColors
+})
+
+watch(() => props.data, (newData) => {
+    if (!newData || !newData.length) return
+
+    chartOptions.value.xaxis.categories = newData[0].data.map(d => d.date)
+
+    series.value = newData.map((category, index) => ({
+        name: category.name,
+        data: category.data.map(d => d.total)
+    }))
+}, {immediate: true})
 </script>

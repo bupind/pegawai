@@ -6,9 +6,11 @@ import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
-import {useForm} from "@inertiajs/vue3";
+import {router, usePage, useForm} from "@inertiajs/vue3";
 import TextAreaInput from "@/Components/TextAreaInput.vue";
 import ImageInput from "@/Components/ImageInput.vue";
+
+import {ref } from 'vue'
 
 const props = defineProps({
     title: String,
@@ -32,6 +34,23 @@ const update = () => {
     });
 };
 
+const page = usePage();
+const flashMessage = ref('');
+
+const updateStatus = () => {
+    router.visit(route('setting.expired-status'), {
+        onSuccess: () => {
+            if (page.props.flash.success) {
+                flashMessage.value = page.props.flash.success;
+
+                setTimeout(() => {
+                    flashMessage.value = '';
+                }, 3000);
+            }
+        }
+    });
+};
+
 const fileChange = (value) => {
     if (value.source === "favicon") {
         form.favicon = value.file;
@@ -49,6 +68,13 @@ const fileChange = (value) => {
 
         <div>
             <div class="max-w-full mx-auto py-10 px-2">
+
+                <button @click="updateStatus" class="btn btn-sm bg-red-600 text-white">
+                    Update Status Sekarang
+                </button>
+
+
+
                 <FormSection>
                     <template #title> {{ lang().label.web_setting }}</template>
 
@@ -61,24 +87,24 @@ const fileChange = (value) => {
                             <div class="w-1/2">
                                 <InputLabel :value="lang().label.favicon" for="favicon"/>
                                 <ImageInput
-                                    v-model="form.favicon"
-                                    :image="props.setting.full_path_favicon"
-                                    class="mt-1 block w-24 h-24"
-                                    source="favicon"
-                                    tooltip="Click to select/change favicon"
-                                    @fileChange="fileChange"
+                                        v-model="form.favicon"
+                                        :image="props.setting.full_path_favicon"
+                                        class="mt-1 block w-24 h-24"
+                                        source="favicon"
+                                        tooltip="Click to select/change favicon"
+                                        @fileChange="fileChange"
                                 />
                                 <InputError :message="form.errors.favicon"/>
                             </div>
                             <div class="w-1/2">
                                 <InputLabel :value="lang().label.logo" for="logo"/>
                                 <ImageInput
-                                    v-model="form.logo"
-                                    :image="props.setting.full_path_logo"
-                                    class="mt-1 block w-24 h-24"
-                                    source="logo"
-                                    tooltip="Click to select/change logo"
-                                    @fileChange="fileChange"
+                                        v-model="form.logo"
+                                        :image="props.setting.full_path_logo"
+                                        class="mt-1 block w-24 h-24"
+                                        source="logo"
+                                        tooltip="Click to select/change logo"
+                                        @fileChange="fileChange"
                                 />
                                 <InputError :message="form.errors.logo"/>
                             </div>

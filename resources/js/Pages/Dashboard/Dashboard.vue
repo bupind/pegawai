@@ -1,18 +1,102 @@
 <script setup>
-import { computed, resolveComponent } from "vue";
+import Table from "@/Components/Table.vue";
+import {computed, ref} from "vue";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import GuestLayout from "@/Layouts/GuestLayout.vue";
 import Breadcrumb from "@/Layouts/Authenticated/Breadcrumb.vue";
 import PieChart from "./partials/PieChart.vue";
 import LineChart from "./partials/LineChart.vue";
-import { ArrowRightIcon } from "@heroicons/vue/24/outline";
-import {Link} from "@inertiajs/vue3";
+import {ArrowRightIcon} from "@heroicons/vue/24/outline";
+import {Link, router} from "@inertiajs/vue3";
 
 const props = defineProps({
     userRole: String,
     pieCharts: Object,
-    lineChartData: Array
+    lineChartData: Array,
+    perPage: Number,
 });
+const licenseTable = ref({
+    visible: false,
+    label: null,
+    data: []
+});
+const certificateTable = ref({
+    visible: false,
+    label: null,
+    data: []
+});
+const handleCertificateClick = (label) => {
+    licenseTable.value.visible = false;
+
+    if (certificateTable.value.label === label && certificateTable.value.visible) {
+        certificateTable.value.visible = false;
+        return;
+    }
+
+    const statusMap = {
+        "Berlaku": "active",
+        "Akan Kadaluarsa": "inactive",
+        "Tidak Berlaku": "expired"
+    };
+    const status = statusMap[label] || 'active';
+
+    router.visit(route('dashboard'), {
+        method: 'get',
+        data: {
+            data: 'certificate',
+            status,
+            field: 'validUntil',
+            order: 'asc',
+            perPage: 10
+        },
+        preserveState: true,
+        preserveScroll: true,
+        onSuccess: (page) => {
+            certificateTable.value = {
+                visible: true,
+                label,
+                data: page.props.certificates || []
+            };
+        }
+    });
+};
+
+const handleLicenseClick = (label) => {
+    certificateTable.value.visible = false;
+
+    if (licenseTable.value.label === label && licenseTable.value.visible) {
+        licenseTable.value.visible = false;
+        return;
+    }
+
+    const statusMap = {
+        "Berlaku": "active",
+        "Akan Kadaluarsa": "inactive",
+        "Tidak Berlaku": "expired"
+    };
+    const status = statusMap[label] || 'active';
+
+    router.visit(route('dashboard'), {
+        method: 'get',
+        data: {
+            data: 'licency',
+            status,
+            field: 'validUntil',
+            order: 'asc',
+            perPage: 10
+        },
+        preserveState: true,
+        preserveScroll: true,
+        onSuccess: (page) => {
+            licenseTable.value = {
+                visible: true,
+                label,
+                data: page.props.licenses || []
+            };
+        }
+    });
+};
+
 
 const LayoutComponent = computed(() => {
     return props.userRole === "superuser" ? AppLayout : GuestLayout;
@@ -26,7 +110,7 @@ const LayoutComponent = computed(() => {
         </template>
 
         <template v-if="userRole === 'superuser'" #breadcrumb>
-            <Breadcrumb />
+            <Breadcrumb/>
         </template>
 
         <div class="py-6">
@@ -37,48 +121,122 @@ const LayoutComponent = computed(() => {
                     <div class="bg-white dark:bg-slate-800 shadow-md rounded-md h-80 flex flex-col p-2">
                         <div class="flex justify-between items-center mb-4 px-3">
                             <h2 class="text-xl font-semibold capitalize text-start">{{ lang().label.employee }}</h2>
-                            <Link :href="route('dashboard.employee')" class="flex items-center px-3 py-1 text-sm font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
-                                <ArrowRightIcon class="w-4 h-4" />
+                            <Link :href="route('dashboard.employee')"
+                                  class="flex items-center px-3 py-1 text-sm font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
+                                <ArrowRightIcon class="w-4 h-4"/>
                             </Link>
                         </div>
 
                         <div class="flex-grow flex items-center justify-center">
-                            <PieChart :data="pieCharts.genderDistribution" class="w-auto h-auto max-w-[90%] max-h-[90%] aspect-square" />
+                            <PieChart :data="pieCharts.genderDistribution"
+                                      class="w-auto h-auto max-w-[90%] max-h-[90%] aspect-square"/>
                         </div>
                     </div>
                     <div class="bg-white dark:bg-slate-800 shadow-md rounded-md h-80 flex flex-col p-2">
                         <div class="flex justify-between items-center mb-4 px-3">
-                            <h2 class="text-xl font-semibold capitalize text-start">{{ lang().label.registrationcertificate }}</h2>
-                            <Link :href="route('dashboard.certificates')" class="flex items-center px-3 py-1 text-sm font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
-                                <ArrowRightIcon class="w-4 h-4" />
-                            </Link>
+                            <h2 class="text-xl font-semibold capitalize text-start">Peringatan STR</h2>
+                            
                         </div>
                         <div class="flex-grow flex items-center justify-center">
-                            <PieChart :data="pieCharts.certificateValidity" class="w-auto h-auto max-w-[90%] max-h-[90%] aspect-square" />
+                            <PieChart :data="pieCharts.certificateStatus" @segmentClicked="handleCertificateClick"
+                                      class="w-auto h-auto max-w-[90%] max-h-[90%] aspect-square"/>
                         </div>
                     </div>
                     <div class="bg-white dark:bg-slate-800 shadow-md rounded-md h-80 flex flex-col p-2">
                         <div class="flex justify-between items-center mb-4 px-3">
-                            <h2 class="text-xl font-semibold capitalize text-start">{{ lang().label.license }}</h2>
-                            <Link :href="route('dashboard.licenses')" class="flex items-center px-3 py-1 text-sm font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
-                                <ArrowRightIcon class="w-4 h-4" />
-                            </Link>
+                            <h2 class="text-xl font-semibold capitalize text-start">Peringatan SIP</h2>
+
                         </div>
                         <div class="flex-grow flex items-center justify-center">
-                            <PieChart :data="pieCharts.licenseValidity" class="w-auto h-auto max-w-[90%] max-h-[90%] aspect-square" />
+                            <PieChart :data="pieCharts.licenseStatus" @segmentClicked="handleLicenseClick"
+                                      class="w-auto h-auto max-w-[90%] max-h-[90%] aspect-square"/>
                         </div>
                     </div>
                 </div>
-
                 <div v-if="lineChartData" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 mt-2">
                     <div class="col-span-12 bg-white dark:bg-slate-800 p-6 shadow-md rounded-md">
                         <div class="flex justify-between items-center mb-4">
-                            <h2 class="text-xl font-semibold capitalize text-start">Total {{ lang().label.employee }}</h2>
+                            <h2 class="text-xl font-semibold capitalize text-start">Total {{
+                                lang().label.employee
+                                }}</h2>
                         </div>
-
-                        <LineChart :data="lineChartData" />
+                        <LineChart :data="lineChartData"/>
                     </div>
                 </div>
+
+                <div v-if="certificateTable.visible"
+                     class="mt-4 bg-white dark:bg-slate-800 p-4 rounded shadow col-span-12">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-lg font-semibold">Data STR - {{ certificateTable.label }}</h3>
+                        <button @click="certificateTable.visible = false"
+                                class="text-sm text-red-600 hover:underline">Tutup
+                        </button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <Table>
+                            <template #table-head>
+                                <tr>
+                                    <th class="p-4 text-center w-5">#</th>
+                                    <th class="p-4 text-start">{{ lang().label.Employee }}</th>
+                                    <th class="p-4 text-start">{{ lang().label.type }}</th>
+                                    <th class="p-4 text-start">{{ lang().label.competence }}</th>
+                                    <th class="p-4 text-start">{{ lang().label.RegistrationNumber }}</th>
+                                    <th class="p-4 text-start">{{ lang().label.ValidFrom }}</th>
+                                    <th class="p-4 text-start">{{ lang().label.ValidUntil }}</th>
+                                </tr>
+                            </template>
+
+                            <template #table-body>
+                                <tr v-for="(item, index) in certificateTable.data" :key="index"
+                                    class="border-t border-slate-200 dark:border-slate-700 hover:bg-slate-200/30 hover:dark:bg-slate-900/20">
+                                    <td class="whitespace-nowrap px-2 py-1 text-center">{{ index + 1 }}</td>
+                                    <td class="whitespace-nowrap px-2 py-1">{{ item.name }}</td>
+                                    <td class="whitespace-nowrap px-2 py-1">{{ item.type }}</td>
+                                    <td class="whitespace-nowrap px-2 py-1">{{ item.competence }}</td>
+                                    <td class="whitespace-nowrap px-2 py-1">{{ item.registrationNumber }}</td>
+                                    <td class="whitespace-nowrap px-2 py-1">{{ item.validFrom }}</td>
+                                    <td class="whitespace-nowrap px-2 py-1">{{ item.validUntil }}</td>
+                                </tr>
+                            </template>
+                        </Table>
+                    </div>
+                </div>
+                <div v-if="licenseTable.visible" class="mt-4 bg-white dark:bg-slate-800 p-4 rounded shadow col-span-12">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-lg font-semibold">Data SIP - {{ licenseTable.label }}</h3>
+                        <button @click="licenseTable.visible = false"
+                                class="text-sm text-red-600 hover:underline">Tutup
+                        </button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <Table>
+                            <template #table-head>
+                                <tr>
+                                    <th class="p-4 text-center w-5">#</th>
+                                    <th class="p-4 text-start">{{ lang().label.Employee }}</th>
+                                    <th class="p-4 text-start">{{ lang().label.type }}</th>
+                                    <th class="p-4 text-start">{{ lang().label.RegistrationNumber }}</th>
+                                    <th class="p-4 text-start">{{ lang().label.ValidFrom }}</th>
+                                    <th class="p-4 text-start">{{ lang().label.ValidUntil }}</th>
+                                </tr>
+                            </template>
+
+                            <template #table-body>
+                                <tr v-for="(item, index) in licenseTable.data" :key="index"
+                                    class="border-t border-slate-200 dark:border-slate-700 hover:bg-slate-200/30 hover:dark:bg-slate-900/20">
+                                    <td class="whitespace-nowrap px-2 py-1 text-center">{{ index + 1 }}</td>
+                                    <td class="whitespace-nowrap px-2 py-1">{{ item.name }}</td>
+                                    <td class="whitespace-nowrap px-2 py-1">{{ item.type }}</td>
+                                    <td class="whitespace-nowrap px-2 py-1">{{ item.registrationNumber }}</td>
+                                    <td class="whitespace-nowrap px-2 py-1">{{ item.validFrom }}</td>
+                                    <td class="whitespace-nowrap px-2 py-1">{{ item.validUntil }}</td>
+                                </tr>
+                            </template>
+                        </Table>
+                    </div>
+                </div>
+
+
             </div>
         </div>
     </component>

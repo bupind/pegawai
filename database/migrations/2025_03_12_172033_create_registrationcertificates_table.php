@@ -14,7 +14,6 @@ return new class extends Migration {
             $table->string('type', 50);
             $table->string('registrationNumber')->unique();
             $table->string('competence')->nullable();
-            $table->string('certificateOfCompetenceNumber')->nullable();
             $table->date('validFrom');
             $table->date('validUntil');
             $table->unsignedBigInteger('registered_by')->nullable();

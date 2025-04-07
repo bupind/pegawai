@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue';
-import GuestLayout from '@/Layouts/GuestLayout.vue';
+import AppLayout from "@/Layouts/AppLayout.vue";
 import LogoutOtherBrowserSessionsForm from '@/Pages/Profile/Partials/LogoutOtherBrowserSessionsForm.vue';
 import SectionBorder from '@/Components/SectionBorder.vue';
 import TwoFactorAuthenticationForm from '@/Pages/Profile/Partials/TwoFactorAuthenticationForm.vue';
@@ -23,7 +23,7 @@ const tabs = [
 </script>
 
 <template>
-    <GuestLayout title="Profile">
+    <AppLayout title="Profile">
         <template #title>
             <span>Profile</span>
         </template>
@@ -45,5 +45,5 @@ const tabs = [
                 </template>
             </TabPanels>
         </div>
-    </GuestLayout>
+    </AppLayout>
 </template>

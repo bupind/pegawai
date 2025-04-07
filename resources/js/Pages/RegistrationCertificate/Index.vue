@@ -7,12 +7,13 @@ import TablePagination from "@/Components/TablePagination.vue";
 import TextInput from "@/Components/TextInput.vue";
 import Create from "@/Pages/RegistrationCertificate/Create.vue";
 import Edit from "@/Pages/RegistrationCertificate/Edit.vue";
+import View from "@/Pages/RegistrationCertificate/View.vue";
 import Delete from "@/Pages/RegistrationCertificate/Delete.vue";
 import DeleteBulk from "@/Pages/RegistrationCertificate/DeleteBulk.vue";
-import {reactive, watch} from "vue";
+import {reactive, ref, watch} from "vue";
 import pkg from "lodash";
 import {router} from "@inertiajs/vue3";
-import {ChevronUpDownIcon} from "@heroicons/vue/24/outline";
+import {ChevronUpDownIcon, MagnifyingGlassIcon} from "@heroicons/vue/24/outline";
 import Checkbox from "@/Components/Checkbox.vue";
 
 const {_, debounce, pickBy} = pkg;
@@ -25,7 +26,10 @@ const props = defineProps({
     types: Object,
     perPage: Number,
 });
-
+const showSearch = ref(false);
+const toggleSearch = () => {
+    showSearch.value = !showSearch.value;
+};
 const data = reactive({
     params: {
         search: props.filters.search,
@@ -76,7 +80,6 @@ const headers = [
     {label: 'type', ordered: 'type'},
     {label: 'registrationNumber', ordered: 'registrationNumber'},
     {label: 'competence', ordered: 'competence'},
-    {label: 'certificateOfCompetenceNumber', ordered: 'certificateOfCompetenceNumber'},
     {label: 'validFrom', ordered: 'validFrom'},
     {label: 'validUntil', ordered: 'validUntil'},
     {label: 'registered_by', ordered: 'registered_by'},
@@ -88,10 +91,9 @@ const bodys = [
     {label: 'type', value: (val) => props.types[val.type] || '-'},
     {label: 'registrationNumber', value: (val) => val.registrationNumber || '-'},
     {label: 'competence', value: (val) => val.competence || '-'},
-    {label: 'certificateOfCompetenceNumber', value: (val) => val.certificateOfCompetenceNumber || '-'},
-    {label: 'certificateOfCompetenceNumber', value: (val) => val.validFrom || '-'},
-    {label: 'certificateOfCompetenceNumber', value: (val) => val.validUntil || '-'},
-    {label: 'certificateOfCompetenceNumber', value: (val) => val.user?.first_name || '-'},
+    {label: 'validFrom', value: (val) => val.validFrom || '-'},
+    {label: 'validUntil', value: (val) => val.validUntil || '-'},
+    {label: 'first_name', value: (val) => val.user?.first_name || '-'},
     {label: 'status', value: (val) => props.statuses[val.status] || '-'},
 ];
 
@@ -127,20 +129,34 @@ const bodys = [
                                 />
                             </div>
                             <div class="flex items-center space-x-2">
-                                <div class="flex space-x-0">
-                                    <button class="flex items-center justify-center w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-l-md hover:bg-gray-300 dark:hover:bg-gray-600"
-                                            @click="toggleSearch">
-                                        <MagnifyingGlassIcon class="w-5 h-5 text-gray-950 dark:text-gray-300"/>
+                                <div class="flex">
+                                    <button
+                                        class="flex items-center justify-center px-3 bg-gray-200 dark:bg-gray-700 rounded-l-md border border-r-0 border-gray-300 dark:border-gray-600 hover:bg-gray-300 dark:hover:bg-gray-600"
+                                    >
+                                        <MagnifyingGlassIcon class="w-5 h-5 text-gray-950 dark:text-gray-300" />
                                     </button>
-                                    <TextInput v-if="showSearch" v-model="data.params.search"
-                                               :placeholder="lang().placeholder.search"
-                                               class="block h-9 transition-all duration-300"
-                                               type="text"/>
-                                    <button class="flex items-center px-3 py-2 bg-green-500 text-white border border-green-600 rounded-r-md hover:bg-green-600"
-                                            @click="exportData('all')">
-                                        <ArrowDownTrayIcon class="w-5 h-5 mr-2"/>
-                                        <span class="text-sm">All</span>
-                                    </button>
+
+                                    <TextInput
+                                        v-model="data.params.search"
+                                        :placeholder="lang().placeholder.search"
+                                        class="h-10 border-t border-b border-gray-300 dark:border-gray-600 rounded-none w-40 text-sm dark:bg-gray-800 dark:text-gray-100"
+                                        type="text"
+                                    />
+
+                                    <select
+                                        v-model="data.params.status"
+                                        class="h-10 rounded-r-md border border-l-0 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm text-gray-700 dark:text-gray-200 px-2 focus:outline-none"
+                                    >
+                                        <option value="">Status</option>
+                                        <option
+                                            v-for="(label, key) in props.statuses"
+                                            :key="key"
+                                            :value="key"
+                                        >
+                                            {{ label }}
+                                        </option>
+                                    </select>
+
                                 </div>
                             </div>
                         </template>
@@ -157,7 +173,7 @@ const bodys = [
                                         <ChevronUpDownIcon v-if="col.ordered" class="w-4 h-4"/>
                                     </div>
                                 </th>
-                                <th class="p-4 text-center">Action</th>
+                                <th class="p-4 text-center w-10">Action</th>
                             </tr>
                         </template>
                         <template #table-body>
@@ -175,6 +191,10 @@ const bodys = [
                                 <td class="whitespace-nowrap flex justify-end px-2 py-1">
                                     <div class="flex w-fit rounded overflow-hidden">
                                         <Edit v-show="can(['registrationcertificate update'])" :title="props.title"
+                                              :statuses="props.statuses" :types="props.types"
+                                              :registrationcertificate="data.dataValue"
+                                              @open="data.dataValue = val"/>
+                                        <View v-show="can(['registrationcertificate read'])" :title="props.title"
                                               :statuses="props.statuses" :types="props.types"
                                               :registrationcertificate="data.dataValue"
                                               @open="data.dataValue = val"/>

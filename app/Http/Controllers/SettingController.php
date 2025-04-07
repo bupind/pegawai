@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Setting;
+use App\Services\ExpiredService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
@@ -20,6 +21,12 @@ class SettingController extends Controller
             'title'   => __('app.label.setting'),
             'setting' => Setting::first()
         ]);
+    }
+
+    public function expiredStatus(ExpiredService $service)
+    {
+        $service->updateAllStatuses();
+        return back()->with('success', 'Semua status berhasil diperbarui.');
     }
 
     /**

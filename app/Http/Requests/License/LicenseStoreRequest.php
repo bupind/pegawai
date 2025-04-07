@@ -14,12 +14,11 @@ class LicenseStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'type'                      => 'required',
-            'employeeId'                => 'required',
-            'registrationCertificateId' => 'required',
-            'validFrom'                 => 'required',
-            'validUntil'                => 'required',
-            'status'                    => 'required',
+            'type'               => 'required',
+            'employeeId'         => 'required',
+            'registrationNumber' => 'required',
+            'validFrom'          => 'required|date',
+            'validUntil'         => 'required|date|after_or_equal:validFrom',
         ];
     }
 }

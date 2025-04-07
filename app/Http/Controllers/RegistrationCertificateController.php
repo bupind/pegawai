@@ -6,6 +6,7 @@ use App\Http\Requests\RegistrationCertificate\RegistrationCertificateIndexReques
 use App\Http\Requests\RegistrationCertificate\RegistrationCertificateStoreRequest;
 use App\Http\Requests\RegistrationCertificate\RegistrationCertificateUpdateRequest;
 use App\Models\RegistrationCertificate;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -21,10 +22,31 @@ class RegistrationCertificateController extends Controller
 
     public function index(RegistrationCertificateIndexRequest $request)
     {
-        $registrationcertificates = RegistrationCertificate::query();
-        if($request->has('search')) {
-            $registrationcertificates->where('name', 'LIKE', "%" . $request->search . "%");
+        $registrationcertificates = RegistrationCertificate::query()->with(['employee']);
+        $registrationcertificates->where(function($query) use ($request) {
+            $search = '%' . $request->search . '%';
+            $fields = [
+                'type',
+                'registrationNumber',
+                'competence',
+                'validFrom',
+                'validUntil'
+            ];
+            $query->whereHas('employee', fn($q) => $q->where('name', 'LIKE', $search))
+                ->orWhereHas('user', fn($q) => $q->where('first_name', 'LIKE', $search))->orWhere(function($q) use (
+                    $fields,
+                    $search
+                ) {
+                    foreach($fields as $field) {
+                        $q->orWhere($field, 'LIKE', $search);
+                    }
+                });
+        });
+
+        if($request->filled('status')) {
+            $registrationcertificates->where('status', $request->status);
         }
+
         if($request->has(['field', 'order'])) {
             $registrationcertificates->orderBy($request->field, $request->order);
         }
@@ -52,18 +74,30 @@ class RegistrationCertificateController extends Controller
     public function store(RegistrationCertificateStoreRequest $request)
     {
         try {
-            RegistrationCertificate::create([
-                'registered_by'                 => auth()->user()->id,
-                'employeeId'                    => $request->employeeId,
-                'type'                          => $request->type,
-                'registrationNumber'            => $request->registrationNumber,
-                'competence'                    => $request->competence,
-                'certificateOfCompetenceNumber' => $request->certificateOfCompetenceNumber,
-                'validFrom'                     => $request->validFrom,
-                'validUntil'                    => $request->validUntil,
-                'status'                        => $request->status,
+            $validUntil = Carbon::parse($request->validUntil);
+            $today      = Carbon::today();
 
+            if($validUntil->lessThanOrEqualTo($today)) {
+                $status = RegistrationCertificate::STATUS_EXPIRED;
+            }
+            elseif($validUntil->lessThanOrEqualTo($today->copy()->addDays(180))) {
+                $status = RegistrationCertificate::STATUS_INACTIVE;
+            }
+            else {
+                $status = RegistrationCertificate::STATUS_ACTIVE;
+            }
+
+            RegistrationCertificate::create([
+                'registered_by'      => auth()->user()->id,
+                'employeeId'         => $request->employeeId,
+                'type'               => $request->type,
+                'registrationNumber' => $request->registrationNumber,
+                'competence'         => $request->competence,
+                'validFrom'          => $request->validFrom,
+                'validUntil'         => $request->validUntil,
+                'status'             => $status,
             ]);
+
             return back()->with('success', __('app.label.created_successfully'));
         } catch(\Throwable $th) {
             return back()->with('error', __('app.label.created_error') . $th->getMessage());
@@ -82,16 +116,29 @@ class RegistrationCertificateController extends Controller
         RegistrationCertificate $registrationcertificate)
     {
         try {
+            $validUntil = Carbon::parse($request->validUntil);
+            $today      = Carbon::today();
+
+            if($validUntil->lessThanOrEqualTo($today)) {
+                $status = RegistrationCertificate::STATUS_EXPIRED;
+            }
+            elseif($validUntil->lessThanOrEqualTo($today->copy()->addDays(180))) {
+                $status = RegistrationCertificate::STATUS_INACTIVE;
+            }
+            else {
+                $status = RegistrationCertificate::STATUS_ACTIVE;
+            }
+
             $registrationcertificate->update([
-                'employeeId'                    => $request->employeeId,
-                'type'                          => $request->type,
-                'registrationNumber'            => $request->registrationNumber,
-                'competence'                    => $request->competence,
-                'certificateOfCompetenceNumber' => $request->certificateOfCompetenceNumber,
-                'validFrom'                     => $request->validFrom,
-                'validUntil'                    => $request->validUntil,
-                'status'                        => $request->status,
+                'employeeId'         => $request->employeeId,
+                'type'               => $request->type,
+                'registrationNumber' => $request->registrationNumber,
+                'competence'         => $request->competence,
+                'validFrom'          => $request->validFrom,
+                'validUntil'         => $request->validUntil,
+                'status'             => $status,
             ]);
+
             return back()->with('success', __('app.label.updated_successfully'));
         } catch(\Throwable $th) {
             return back()->with('error', __('app.label.updated_error') . $th->getMessage());

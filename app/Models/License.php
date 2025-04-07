@@ -12,18 +12,17 @@ class License extends Model
 
     const STATUS_ACTIVE   = 'active';
     const STATUS_INACTIVE = 'inactive';
-    const TYPE_NURSE      = 'nurse';
-    const TYPE_DOCTOR     = 'doctor';
-    const TYPE_MEDICAL    = 'medical';
+    const STATUS_EXPIRED  = 'expired';
+
+    const TYPE_NURSE   = 'nurse';
+    const TYPE_DOCTOR  = 'doctor';
+    const TYPE_MEDICAL = 'medical';
 
     protected $table    = 'license';
     protected $fillable = [
         'employeeId',
-        'registrationCertificateId',
         'type',
         'registrationNumber',
-        'recommendationNumberAssociation',
-        'recommendationNumber',
         'validFrom',
         'validUntil',
         'status',
@@ -32,16 +31,17 @@ class License extends Model
     public static function statuses()
     {
         return [
-            self::STATUS_ACTIVE   => __('Aktif'),
-            self::STATUS_INACTIVE => __('Tidak Aktif'),
+            self::STATUS_ACTIVE   => __('Berlaku'),
+            self::STATUS_INACTIVE => __('Akan Kadaluarsa'),
+            self::STATUS_EXPIRED  => __('Tidak Berlaku'),
         ];
     }
 
     public static function types()
     {
         return [
-            self::TYPE_NURSE  => __('Perawat'),
-            self::TYPE_DOCTOR => __('Dokter'),
+            self::TYPE_NURSE   => __('Perawat'),
+            self::TYPE_DOCTOR  => __('Dokter'),
             self::TYPE_MEDICAL => __('Penunjang Medis'),
         ];
     }
@@ -59,11 +59,6 @@ class License extends Model
     public function getUpdatedAtAttribute()
     {
         return Carbon::parse($this->attributes['updated_at'])->isoFormat('D MMMM Y HH:mm');
-    }
-
-    public function certificate()
-    {
-        return $this->belongsTo(RegistrationCertificate::class, 'registrationCertificateId');
     }
 
     public function employee()

@@ -10,6 +10,7 @@ import FloatingVue from "floating-vue";
 import Vue3Lottie from "vue3-lottie";
 import "vue3-lottie/dist/style.css";
 import JsonViewer from 'vue-json-viewer'
+import VueApexCharts from "vue3-apexcharts";
 
 
 const appName = window.document.getElementsByTagName("title")[0]?.innerText || "Laravel";
@@ -24,6 +25,8 @@ createInertiaApp({
             .use(FloatingVue)
             .use(Vue3Lottie)
             .use(JsonViewer)
+            .use(VueApexCharts)
+            .component("apexchart", VueApexCharts)
             .mixin({
                 methods: {
                     can: function (permissions) {

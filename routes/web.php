@@ -60,7 +60,10 @@ Route::prefix('system')->middleware([
     Route::post('permission/destroy-bulk', [PermissionController::class, 'destroyBulk'])
         ->name('permission.destroy-bulk');
 
-    Route::resource('setting', SettingController::class)->except('create', 'store', 'show', 'edit', 'destory');
+    Route::prefix('setting')->name('setting.')->group(function () {
+        Route::resource('/', SettingController::class)->except('create', 'store', 'show', 'edit', 'destroy');
+        Route::get('expired-status', [SettingController::class, 'expiredStatus'])->name('expired-status');
+    });
 
     Route::resource('employee', EmployeeController::class);
     Route::post('employee/destroy-bulk', [EmployeeController::class, 'destroyBulk'])->name('employee.destroy-bulk');

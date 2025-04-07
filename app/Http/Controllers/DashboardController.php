@@ -5,97 +5,131 @@ namespace App\Http\Controllers;
 use App\Models\Employee;
 use App\Models\License;
 use App\Models\RegistrationCertificate;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $user  = auth()->user();
-        $role  = $user->getRoleNames()->first();
-        $dates = collect();
-        for($i = 6; $i >= 0; $i--) {
-            $dates->push(now()->subDays($i)->toDateString());
+        $dataType = $request->get('data');
+        $status   = $request->get('status');
+        $field    = $request->get('field', 'name');
+        $order    = $request->get('order', 'asc');
+        $perPage  = $request->get('perPage', 10);
+
+        $user = auth()->user();
+        $role = $user->getRoleNames()->first();
+
+        $months = collect();
+        for($i = 5; $i >= 0; $i--) {
+            $months->push(now()->subMonths($i)->format('Y-m'));
         }
 
-        $initialEmployeeCount = Employee::where('status', Employee::STATUS_ACTIVE)
-            ->whereDate('created_at', '<', now()->subDays(6))->count();
+        $maleEmployees   = Employee::where('gender', 'male')->count();
+        $femaleEmployees = Employee::where('gender', 'female')->count();
 
-        $employeesRaw = Employee::where('status', Employee::STATUS_ACTIVE)
-            ->whereDate('created_at', '>=', now()->subDays(6))->selectRaw('DATE(created_at) as date, COUNT(*) as total')
-            ->groupBy('date')->pluck('total', 'date')->toArray();
-
-        $formattedEmployees = [];
-        $cumulativeTotal    = $initialEmployeeCount;
-        foreach($dates as $date) {
-            $cumulativeTotal      += $employeesRaw[$date] ?? 0;
-            $formattedEmployees[] = ['date' => $date, 'total' => $cumulativeTotal];
-        }
-
-        $formattedCertificates = $this->calculateCumulativeData(RegistrationCertificate::class, 'validFrom', 'validUntil', $dates);
-        $formattedLicenses     = $this->calculateCumulativeData(License::class, 'validFrom', 'validUntil', $dates);
-        $maleEmployees         = Employee::where('gender', 'male')->count();
-        $femaleEmployees       = Employee::where('gender', 'female')->count();
-        $validCertificates     = RegistrationCertificate::where('status', RegistrationCertificate::STATUS_ACTIVE)
-            ->whereDate('validUntil', '>=', now())->distinct('employeeId')->count();
-        $expiredCertificates   = RegistrationCertificate::where('status', RegistrationCertificate::STATUS_ACTIVE)
-            ->whereDate('validUntil', '<', now())->distinct('employeeId')->count();
-        $validLicenses         = License::where('status', License::STATUS_ACTIVE)->whereDate('validUntil', '>=', now())
-            ->distinct('employeeId')->count();
-        $expiredLicenses       = License::where('status', License::STATUS_ACTIVE)->whereDate('validUntil', '<', now())
-            ->distinct('employeeId')->count();
-
-        $pieCharts = [
-            'genderDistribution'  => [
-                ['label' => 'Laki-laki', 'value' => $maleEmployees],
-                ['label' => 'Perempuan', 'value' => $femaleEmployees],
-            ],
-            'certificateValidity' => [
-                ['label' => 'Sertifikat Berlaku', 'value' => $validCertificates],
-                ['label' => 'Sertifikat Kadaluarsa', 'value' => $expiredCertificates],
-            ],
-            'licenseValidity'     => [
-                ['label' => 'Izin Berlaku', 'value' => $validLicenses],
-                ['label' => 'Izin Kadaluarsa', 'value' => $expiredLicenses],
-            ],
+        $certificateStats = $this->calculateMonthlyStatus(RegistrationCertificate::class, $months);
+        $licenseStats     = $this->calculateMonthlyStatus(License::class, $months);
+        $certificatePie   = [
+            'active'   => RegistrationCertificate::where('status', RegistrationCertificate::STATUS_ACTIVE)->count(),
+            'inactive' => RegistrationCertificate::where('status', RegistrationCertificate::STATUS_INACTIVE)->count(),
+            'expired'  => RegistrationCertificate::where('status', RegistrationCertificate::STATUS_EXPIRED)->count(),
+        ];
+        $licensePie       = [
+            'active'   => License::where('status', License::STATUS_ACTIVE)->count(),
+            'inactive' => License::where('status', License::STATUS_INACTIVE)->count(),
+            'expired'  => License::where('status', License::STATUS_EXPIRED)->count(),
         ];
 
+        $licenses    = [];
+        $certificate = [];
+        if($dataType === 'licency') {
+            $query = License::with('employee')->where('status', $status);
+            $query->orderBy($field, $order);
+            $licenses = $query->get()->map(function($item) {
+                return [
+                    'name'               => $item->employee->name ?? '-',
+                    'type'               => License::types()[$item->type],
+                    'registrationNumber' => $item->registrationNumber,
+                    'validFrom'          => $item->validFrom,
+                    'validUntil'         => $item->validUntil
+                ];
+            })->values();
+        }
+        if($dataType === 'certificate') {
+            $query = RegistrationCertificate::with('employee')->where('status', $status);
+            $query->orderBy($field, $order);
+            $certificate = $query->get()->map(function($item) {
+                return [
+                    'name'               => $item->employee->name ?? '-',
+                    'type'               => RegistrationCertificate::types()[$item->type],
+                    'registrationNumber' => $item->registrationNumber,
+                    'competence'         => $item->competence,
+                    'validFrom'          => $item->validFrom,
+                    'validUntil'         => $item->validUntil
+                ];
+            })->values();
+        }
 
         return Inertia::render('Dashboard/Dashboard', [
             'userRole'      => $role,
             'lineChartData' => [
-                ['name' => 'Total Pegawai', 'data' => $formattedEmployees],
-                ['name' => 'Total Registration Certificate', 'data' => $formattedCertificates],
-                ['name' => 'Total License', 'data' => $formattedLicenses],
+                ['name' => 'Sertifikat Berlaku', 'data' => $certificateStats['active']],
+                ['name' => 'Sertifikat Akan Kadaluarsa', 'data' => $certificateStats['inactive']],
+                ['name' => 'Sertifikat Tidak Berlaku', 'data' => $certificateStats['expired']],
+                ['name' => 'Izin Berlaku', 'data' => $licenseStats['active']],
+                ['name' => 'Izin Akan Kadaluarsa', 'data' => $licenseStats['inactive']],
+                ['name' => 'Izin Tidak Berlaku', 'data' => $licenseStats['expired']],
             ],
-            'pieCharts'     => $pieCharts,
+            'pieCharts'     => [
+                'genderDistribution' => [
+                    ['label' => 'Laki-laki', 'value' => $maleEmployees],
+                    ['label' => 'Perempuan', 'value' => $femaleEmployees],
+                ],
+                'certificateStatus'  => [
+                    ['label' => 'Berlaku', 'value' => $certificatePie['active']],
+                    ['label' => 'Akan Kadaluarsa', 'value' => $certificatePie['inactive']],
+                    ['label' => 'Tidak Berlaku', 'value' => $certificatePie['expired']],
+                ],
+                'licenseStatus'      => [
+                    ['label' => 'Berlaku', 'value' => $licensePie['active']],
+                    ['label' => 'Akan Kadaluarsa', 'value' => $licensePie['inactive']],
+                    ['label' => 'Tidak Berlaku', 'value' => $licensePie['expired']],
+                ],
+            ],
+            'licenses'      => $licenses,
+            'certificates'  => $certificate,
         ]);
     }
 
-    private function calculateCumulativeData($model, $startColumn, $endColumn, $dates)
+    private function calculateMonthlyStatus($model, $months)
     {
-        $initialCount    = $model::where('status', $model::STATUS_ACTIVE)->count();
-        $rawData         = $model::where('status', $model::STATUS_ACTIVE)
-            ->whereDate($endColumn, '>=', now()->subDays(6))
-            ->selectRaw("DATE($startColumn) as date_start, DATE($endColumn) as date_end, COUNT(*) as total")
-            ->groupBy('date_start', 'date_end')->orderBy('date_start')->get();
-        $formattedData   = [];
-        $cumulativeCount = $initialCount;
+        $result = [
+            'active'   => [],
+            'inactive' => [],
+            'expired'  => [],
+        ];
 
-        foreach($dates as $date) {
-            foreach($rawData as $data) {
-                if($data->date_start == $date) {
-                    $cumulativeCount += $data->total;
-                }
-                if($data->date_end == $date) {
-                    $cumulativeCount -= $data->total;
-                }
-            }
-            $formattedData[] = ['date' => $date, 'total' => max(0, $cumulativeCount)];
+        foreach($months as $month) {
+            $startOfMonth = Carbon::parse($month)->startOfMonth();
+            $endOfMonth   = Carbon::parse($month)->endOfMonth();
+
+            $active = $model::where('status', $model::STATUS_ACTIVE)->whereDate('validFrom', '<=', $endOfMonth)
+                ->whereDate('validUntil', '>=', $startOfMonth)->count();
+
+            $inactive = $model::where('status', $model::STATUS_ACTIVE)->whereDate('validUntil', '>', $endOfMonth)
+                ->whereDate('validUntil', '<=', $endOfMonth->copy()->addDays(30))->count();
+
+            $expired = $model::whereDate('validUntil', '<', $startOfMonth)->count();
+
+            $result['active'][]   = ['date' => $month, 'total' => $active];
+            $result['inactive'][] = ['date' => $month, 'total' => $inactive];
+            $result['expired'][]  = ['date' => $month, 'total' => $expired];
         }
 
-        return $formattedData;
+        return $result;
     }
 
     public function employee(Request $request)

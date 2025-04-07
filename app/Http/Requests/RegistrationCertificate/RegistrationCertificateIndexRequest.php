@@ -14,8 +14,7 @@ class RegistrationCertificateIndexRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'field' => ['in:name,created_at,updated_at'],
-            'order' => ['in:asc,desc'],
+            'order'   => ['in:asc,desc'],
             'perPage' => ['numeric'],
         ];
     }

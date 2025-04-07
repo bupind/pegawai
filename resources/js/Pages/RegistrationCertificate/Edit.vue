@@ -21,17 +21,14 @@ const props = defineProps({
     registrationcertificate: Object,
 });
 
-const statuse = computed(() => Object.entries(props.statuses).map(([value, label]) => ({label, value})));
 const typee = computed(() => Object.entries(props.types).map(([value, label]) => ({label, value})));
 const form = useForm({
     employeeId: "",
     type: "",
     registrationNumber: "",
     competence: "",
-    certificateOfCompetenceNumber: "",
     validFrom: "",
     validUntil: "",
-    status: "",
 });
 onUpdated(() => {
     if (show) {
@@ -39,10 +36,8 @@ onUpdated(() => {
         form.type = props.registrationcertificate?.type;
         form.registrationNumber = props.registrationcertificate?.registrationNumber;
         form.competence = props.registrationcertificate?.competence;
-        form.certificateOfCompetenceNumber = props.registrationcertificate?.certificateOfCompetenceNumber;
         form.validFrom = props.registrationcertificate?.validFrom;
         form.validUntil = props.registrationcertificate?.validUntil;
-        form.status = props.registrationcertificate?.status;
     }
 });
 
@@ -92,17 +87,17 @@ const closeModal = () => {
                         />
                         <InputError :message="form.errors.type"/>
                     </div>
-                    <div class="space-y-1">
-                        <InputLabel for="registrationNumber" :value="lang().label.registrationNumber"/>
-                        <TextInput id="registrationNumber" v-model="form.registrationNumber"
-                                   :error="form.errors.registrationNumber"
-                                   :placeholder="lang().placeholder.registrationNumber"
-                                   autocomplete="off" class="block w-full"
-                                   type="text"
-                        />
-                        <InputError :message="form.errors.registrationNumber"/>
-                    </div>
                     <div class="flex gap-1">
+                        <div class="w-1/2">
+                            <InputLabel for="registrationNumber" :value="lang().label.registrationNumber"/>
+                            <TextInput id="registrationNumber" v-model="form.registrationNumber"
+                                       :error="form.errors.registrationNumber"
+                                       :placeholder="lang().placeholder.registrationNumber"
+                                       autocomplete="off" class="block w-full"
+                                       type="text"
+                            />
+                            <InputError :message="form.errors.registrationNumber"/>
+                        </div>
                         <div class="w-1/2">
                             <InputLabel for="competence" :value="lang().label.competence"/>
                             <TextInput id="competence" v-model="form.competence"
@@ -112,17 +107,6 @@ const closeModal = () => {
                                        type="text"
                             />
                             <InputError :message="form.errors.competence"/>
-                        </div>
-                        <div class="w-1/2">
-                            <InputLabel for="certificateOfCompetenceNumber"
-                                        :value="lang().label.certificateOfCompetenceNumber"/>
-                            <TextInput id="certificateOfCompetenceNumber" v-model="form.certificateOfCompetenceNumber"
-                                       :error="form.errors.certificateOfCompetenceNumber"
-                                       :placeholder="lang().placeholder.certificateOfCompetenceNumber"
-                                       autocomplete="off" class="block w-full"
-                                       type="text"
-                            />
-                            <InputError :message="form.errors.certificateOfCompetenceNumber"/>
                         </div>
                     </div>
                     <div class="flex gap-1">
@@ -146,17 +130,6 @@ const closeModal = () => {
                             />
                             <InputError :message="form.errors.validUntil"/>
                         </div>
-                    </div>
-                    <div class="space-y-1">
-                        <InputLabel for="status" :value="lang().label.status"/>
-                        <SelectInput
-                                id="status"
-                                v-model="form.status"
-                                :dataSet="statuse"
-                                class="block w-full"
-                                :error="form.errors.status"
-                        />
-                        <InputError :message="form.errors.status"/>
                     </div>
                 </form>
 

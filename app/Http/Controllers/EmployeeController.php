@@ -22,8 +22,13 @@ class EmployeeController extends Controller
     public function index(EmployeeIndexRequest $request)
     {
         $employees = Employee::query();
-        if($request->has('search')) {
-            $employees->where('name', 'LIKE', "%" . $request->search . "%");
+        if($request->filled('search')) {
+            $searchable = ['code', 'name', 'gender', 'status'];
+            $employees->where(function($query) use ($request, $searchable) {
+                foreach($searchable as $field) {
+                    $query->orWhere($field, 'LIKE', '%' . $request->search . '%');
+                }
+            });
         }
         if($request->has(['field', 'order'])) {
             $employees->orderBy($request->field, $request->order);

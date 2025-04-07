@@ -47,17 +47,6 @@ const submit = () => {
             </div>
 
             <form @submit.prevent="submit">
-                <div class="space-y-1">
-                    <InputLabel :value="lang().label.bumn" for="bumn"/>
-                    <DropdownLoader
-                        v-model="form.bumn_id"
-                        apiUrl="/dropdown/bumn"
-                        placeholder="Pilih BUMN"
-                        :error="form.errors.bumn_id"
-                    />
-                    <InputError :message="form.errors.bumn_id"/>
-                </div>
-
                 <div class="flex gap-4 mt-4">
                     <div class="w-1/2">
                         <InputLabel :value="lang().label.first_name" for="first_name"/>

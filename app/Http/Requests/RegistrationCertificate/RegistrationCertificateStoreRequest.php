@@ -17,9 +17,8 @@ class RegistrationCertificateStoreRequest extends FormRequest
             'employeeId'         => 'required',
             'type'               => 'required',
             'registrationNumber' => 'required',
-            'validFrom'          => 'required',
-            'validUntil'         => 'required',
-            'status'             => 'required',
+            'validFrom'          => 'required|date',
+            'validUntil'         => 'required|date|after_or_equal:validFrom',
         ];
     }
 }
