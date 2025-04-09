@@ -42,7 +42,7 @@ class License extends Model
         return [
             self::TYPE_NURSE   => __('Perawat'),
             self::TYPE_DOCTOR  => __('Dokter'),
-            self::TYPE_MEDICAL => __('Penunjang Medis'),
+            self::TYPE_MEDICAL => __('Tenaga Kesehatan Lain'),
         ];
     }
 
