@@ -184,12 +184,11 @@ class RegistrationCertificateController extends Controller
             return back()->with('error', __('app.label.updated_error') . $th->getMessage());
         }
     }
-
-    public function destroy($id)
+    
+    public function destroy(RegistrationCertificate $data)
     {
         try {
-            $registrationCertificate = RegistrationCertificate::findOrFail($id);
-            $registrationCertificate->delete();
+            $data->delete();
             return back()->with('success', __('app.label.deleted_successfully'));
         } catch(\Throwable $th) {
             return back()->with('error', __('app.label.deleted_error') . $th->getMessage());
