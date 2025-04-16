@@ -28,7 +28,6 @@ class UserStoreRequest extends FormRequest
             'email'        => 'required|string|email|max:255|unique:' . User::class,
             'phone_number' => 'required|string|string|max:15|unique:' . User::class,
             'password'     => ['required', 'confirmed', Password::defaults()],
-            'role'         => ['required'],
         ];
     }
 }

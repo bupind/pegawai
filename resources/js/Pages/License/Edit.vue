@@ -2,14 +2,13 @@
 import DialogModal from "@/Components/DialogModal.vue";
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
-import SelectInput from "@/Components/SelectInput.vue";
 import DropdownLoader from "@/Components/DropdownLoader.vue";
 import ActionButton from "@/Components/ActionButton.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
 import {useForm} from "@inertiajs/vue3";
-import {computed, onUpdated, ref} from "vue";
+import {onUpdated, ref} from "vue";
 import {PencilIcon} from "@heroicons/vue/24/outline";
 
 const emit = defineEmits(["open"]);
@@ -17,22 +16,18 @@ const show = ref(false);
 const props = defineProps({
     title: String,
     statuses: Object,
-    types: Object,
     license: Object,
 });
 
 const form = useForm({
     employeeId: "",
-    type: "",
     registrationNumber: "",
     validFrom: "",
     validUntil: "",
 });
-const typee = computed(() => Object.entries(props.types).map(([value, label]) => ({label, value})));
 onUpdated(() => {
     if (show) {
         form.employeeId = props.license?.employeeId;
-        form.type = props.license?.type;
         form.registrationNumber = props.license?.registrationNumber;
         form.validFrom = props.license?.validFrom;
         form.validUntil = props.license?.validUntil;
@@ -73,21 +68,12 @@ const closeModal = () => {
                     <div class="space-y-1">
                         <InputLabel :value="lang().label.employee" for="employeeId"/>
                         <DropdownLoader
-                            v-model="form.employeeId"
-                            apiUrl="dropdown/employees"
-                            placeholder="Pilih Salah Satu"
-                            :error="form.errors.employeeId"
+                                v-model="form.employeeId"
+                                apiUrl="dropdown/employees"
+                                placeholder="Pilih Salah Satu"
+                                :error="form.errors.employeeId"
                         />
                         <InputError :message="form.errors.employeeId"/>
-                    </div>
-                    <div class="space-y-1">
-                        <InputLabel for="type" :value="lang().label.type"/>
-                        <SelectInput id="type" v-model="form.type"
-                                     :dataSet="typee"
-                                     class="block w-full"
-                                     :error="form.errors.type"
-                        />
-                        <InputError :message="form.errors.type"/>
                     </div>
                     <div class="space-y-1">
                         <InputLabel for="registrationNumber" :value="lang().label.registrationNumber"/>

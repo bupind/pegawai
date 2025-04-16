@@ -20,10 +20,10 @@ class User extends Authenticatable implements MustVerifyEmail
     const ROLE_PEGAWAI   = 'pegawai';
 
     protected $fillable = [
-        'company_id',
         'first_name',
         'last_name',
         'email',
+        'email_verified_at',
         'phone_number',
         'password',
     ];
@@ -54,9 +54,12 @@ class User extends Authenticatable implements MustVerifyEmail
      *
      * @var array<int, string>
      */
-    protected $appends = [
-        'profile_photo_url',
-    ];
+    protected $appends = ['profile_photo_url', 'full_photo'];
+
+    public function getFullPhotoAttribute()
+    {
+        return $this->profile_photo_path === null ? asset('logo.svg') : asset('storage/' . $this->profile_photo_path);
+    }
 
     /**
      * Format created_at attribute

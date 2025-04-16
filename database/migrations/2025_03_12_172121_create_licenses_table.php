@@ -11,11 +11,10 @@ return new class extends Migration {
         Schema::create('license', function(Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('employeeId');
-            $table->string('type', 50);
             $table->string('registrationNumber')->unique();
             $table->date('validFrom');
             $table->date('validUntil');
-            $table->string('status', 50)->default(License::STATUS_ACTIVE);
+            $table->string('status', 50)->default(License::STATUS_VALID);
             $table->timestamps();
 
             $table->foreign('employeeId')->references('id')->on('employee')->onDelete('cascade');

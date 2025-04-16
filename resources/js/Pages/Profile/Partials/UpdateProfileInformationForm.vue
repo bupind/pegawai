@@ -89,7 +89,7 @@ const clearPhotoFileInput = () => {
                 <input ref="photoInput" class="hidden" type="file" @change="updatePhotoPreview">
                 <InputLabel :value="lang().label.photo" for="photo"/>
                 <div v-show="!photoPreview" class="mt-2">
-                    <img :alt="user.first_name" :src="user.profile_photo_url" class="rounded h-20 w-20 object-cover">
+                    <img :alt="user.first_name" :src="user.full_photo" class="rounded h-20 w-20 object-cover">
                 </div>
                 <div v-show="photoPreview" class="mt-2">
                     <span :style="'background-image: url(\'' + photoPreview + '\');'"

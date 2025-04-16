@@ -13,6 +13,7 @@ use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RegistrationCertificateController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
 
@@ -56,14 +57,14 @@ Route::prefix('system')->middleware([
     Route::resource('role', RoleController::class);
     Route::post('role/destroy-bulk', [RoleController::class, 'destroyBulk'])->name('role.destroy-bulk');
 
+    Route::resource('user', UserController::class);
+    Route::post('user/destroy-bulk', [UserController::class, 'destroyBulk'])->name('user.destroy-bulk');
+
     Route::resource('permission', PermissionController::class);
     Route::post('permission/destroy-bulk', [PermissionController::class, 'destroyBulk'])
         ->name('permission.destroy-bulk');
 
-    Route::prefix('setting')->name('setting.')->group(function () {
-        Route::resource('/', SettingController::class)->except('create', 'store', 'show', 'edit', 'destroy');
-        Route::get('expired-status', [SettingController::class, 'expiredStatus'])->name('expired-status');
-    });
+    Route::resource('setting', SettingController::class)->except('create', 'store', 'show', 'edit', 'destory');
 
     Route::resource('employee', EmployeeController::class);
     Route::post('employee/destroy-bulk', [EmployeeController::class, 'destroyBulk'])->name('employee.destroy-bulk');

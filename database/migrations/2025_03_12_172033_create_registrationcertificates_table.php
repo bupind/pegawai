@@ -11,13 +11,12 @@ return new class extends Migration {
         Schema::create('registration_certificate', function(Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('employeeId');
-            $table->string('type', 50);
             $table->string('registrationNumber')->unique();
             $table->string('competence')->nullable();
             $table->date('validFrom');
             $table->date('validUntil');
             $table->unsignedBigInteger('registered_by')->nullable();
-            $table->string('status', 50)->default(RegistrationCertificate::STATUS_ACTIVE);
+            $table->string('status', 50)->default(RegistrationCertificate::STATUS_VALID);
             $table->timestamps();
 
             // Foreign Keys

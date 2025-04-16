@@ -6,12 +6,13 @@ import GuestLayout from "@/Layouts/GuestLayout.vue";
 import Breadcrumb from "@/Layouts/Authenticated/Breadcrumb.vue";
 import PieChart from "./partials/PieChart.vue";
 import LineChart from "./partials/LineChart.vue";
-import {ArrowRightIcon} from "@heroicons/vue/24/outline";
-import {Link, router} from "@inertiajs/vue3";
+import {router} from "@inertiajs/vue3";
 
 const props = defineProps({
     userRole: String,
     pieCharts: Object,
+    statuses: Object,
+    translations: Object,
     lineChartData: Array,
     perPage: Number,
 });
@@ -25,20 +26,19 @@ const certificateTable = ref({
     label: null,
     data: []
 });
+
+const reverseStatusMap = Object.entries(props.statuses).reduce((acc, [status, label]) => {
+    acc[label] = status;
+    return acc;
+}, {});
+
 const handleCertificateClick = (label) => {
     licenseTable.value.visible = false;
-
+    const status = reverseStatusMap[label] || 'valid';
     if (certificateTable.value.label === label && certificateTable.value.visible) {
         certificateTable.value.visible = false;
         return;
     }
-
-    const statusMap = {
-        "Berlaku": "active",
-        "Akan Kadaluarsa": "inactive",
-        "Tidak Berlaku": "expired"
-    };
-    const status = statusMap[label] || 'active';
 
     router.visit(route('dashboard'), {
         method: 'get',
@@ -62,19 +62,13 @@ const handleCertificateClick = (label) => {
 };
 
 const handleLicenseClick = (label) => {
-    certificateTable.value.visible = false;
+    const status = reverseStatusMap[label] || 'valid';
 
+    certificateTable.value.visible = false;
     if (licenseTable.value.label === label && licenseTable.value.visible) {
         licenseTable.value.visible = false;
         return;
     }
-
-    const statusMap = {
-        "Berlaku": "active",
-        "Akan Kadaluarsa": "inactive",
-        "Tidak Berlaku": "expired"
-    };
-    const status = statusMap[label] || 'active';
 
     router.visit(route('dashboard'), {
         method: 'get',
@@ -121,10 +115,6 @@ const LayoutComponent = computed(() => {
                     <div class="bg-white dark:bg-slate-800 shadow-md rounded-md h-80 flex flex-col p-2">
                         <div class="flex justify-between items-center mb-4 px-3">
                             <h2 class="text-xl font-semibold capitalize text-start">{{ lang().label.employee }}</h2>
-                            <Link :href="route('dashboard.employee')"
-                                  class="flex items-center px-3 py-1 text-sm font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
-                                <ArrowRightIcon class="w-4 h-4"/>
-                            </Link>
                         </div>
 
                         <div class="flex-grow flex items-center justify-center">
@@ -134,8 +124,8 @@ const LayoutComponent = computed(() => {
                     </div>
                     <div class="bg-white dark:bg-slate-800 shadow-md rounded-md h-80 flex flex-col p-2">
                         <div class="flex justify-between items-center mb-4 px-3">
-                            <h2 class="text-xl font-semibold capitalize text-start">Peringatan STR</h2>
-                            
+                            <h2 class="text-xl font-semibold capitalize text-start">{{lang().label.warning_str}}</h2>
+
                         </div>
                         <div class="flex-grow flex items-center justify-center">
                             <PieChart :data="pieCharts.certificateStatus" @segmentClicked="handleCertificateClick"
@@ -144,7 +134,7 @@ const LayoutComponent = computed(() => {
                     </div>
                     <div class="bg-white dark:bg-slate-800 shadow-md rounded-md h-80 flex flex-col p-2">
                         <div class="flex justify-between items-center mb-4 px-3">
-                            <h2 class="text-xl font-semibold capitalize text-start">Peringatan SIP</h2>
+                            <h2 class="text-xl font-semibold capitalize text-start">{{lang().label.warning_sip}}</h2>
 
                         </div>
                         <div class="flex-grow flex items-center justify-center">
@@ -156,9 +146,7 @@ const LayoutComponent = computed(() => {
                 <div v-if="lineChartData" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 mt-2">
                     <div class="col-span-12 bg-white dark:bg-slate-800 p-6 shadow-md rounded-md">
                         <div class="flex justify-between items-center mb-4">
-                            <h2 class="text-xl font-semibold capitalize text-start">Total {{
-                                lang().label.employee
-                                }}</h2>
+                            <h2 class="text-xl font-semibold capitalize text-start">{{lang().label.status_certificate_and_license }}</h2>
                         </div>
                         <LineChart :data="lineChartData"/>
                     </div>

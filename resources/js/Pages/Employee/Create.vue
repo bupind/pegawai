@@ -12,20 +12,29 @@ import {PlusIcon} from "@heroicons/vue/24/outline";
 
 const show = ref(false);
 const props = defineProps({
+    canLogin: String,
     title: String,
+    canLogins: String,
     statuses: Object,
     genders: Object,
+    types: Object,
 });
 
 const form = useForm({
     code: "",
     name: "",
     gender: "",
+    type: "",
     status: "",
+    ...(props.canLogins === 'true' && {
+        email: "",
+        phone_number: "",
+    }),
 });
 
 const statuse = computed(() => Object.entries(props.statuses).map(([value, label]) => ({label, value})));
 const gender = computed(() => Object.entries(props.genders).map(([value, label]) => ({label, value})));
+const type = computed(() => Object.entries(props.types).map(([value, label]) => ({label, value})));
 
 const submit = () => {
     form.post(route("employee.store"), {
@@ -83,16 +92,57 @@ const closeModal = () => {
                         />
                         <InputError :message="form.errors.name"/>
                     </div>
+
+                    <div v-if="props.canLogins === 'true'" class="flex gap-4">
+                        <div class="w-1/2">
+                            <InputLabel :value="lang().label.email" for="email"/>
+                            <TextInput
+                                id="email"
+                                v-model="form.email"
+                                :error="form.errors.email"
+                                :placeholder="lang().placeholder.email"
+                                class="block w-full"
+                                type="email"
+                                @keyup.enter="submit"
+                            />
+                            <InputError :message="form.errors.email"/>
+                        </div>
+                        <div class="w-1/2">
+                            <InputLabel :value="lang().label.phone_number" for="phone_number"/>
+                            <TextInput
+                                id="phone_number"
+                                v-model="form.phone_number"
+                                :error="form.errors.phone_number"
+                                :placeholder="lang().placeholder.phone_number"
+                                class="block w-full"
+                                type="text"
+                                @keyup.enter="submit"
+                            />
+                            <InputError :message="form.errors.phone_number"/>
+                        </div>
+                    </div>
+
                     <div class="space-y-1">
                         <InputLabel for="gender" :value="lang().label.Gender"/>
                         <SelectInput
-                                id="status"
+                                id="gender"
                                 v-model="form.gender"
                                 :dataSet="gender"
                                 class="block w-full"
                                 :error="form.errors.gender"
                         />
-                        <InputError :message="form.errors.status"/>
+                        <InputError :message="form.errors.gender"/>
+                    </div>
+                    <div class="space-y-1">
+                        <InputLabel for="types" :value="lang().label.type"/>
+                        <SelectInput
+                                id="types"
+                                v-model="form.type"
+                                :dataSet="type"
+                                class="block w-full"
+                                :error="form.errors.type"
+                        />
+                        <InputError :message="form.errors.type"/>
                     </div>
                     <div class="space-y-1">
                         <InputLabel for="status" :value="lang().label.Status"/>

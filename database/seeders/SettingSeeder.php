@@ -13,12 +13,13 @@ class SettingSeeder extends Seeder
     public function run(): void
     {
         Setting::create([
-            'user_id'     => 1,
-            'favicon'     => null,
-            'logo'        => null,
-            'name'        => 'Pegawai',
-            'short_name'  => 'Pegawai',
-            'Description' => 'Pegawai.'
+            'user_id'          => 1,
+            'favicon'          => null,
+            'logo'             => null,
+            'name'             => 'Pegawai',
+            'short_name'       => 'Pegawai',
+            'Description'      => 'Pegawai.',
+            'employeecanlogin' => Setting::LOGIN_FALSE
         ]);
     }
 }

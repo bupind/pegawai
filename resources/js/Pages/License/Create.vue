@@ -2,7 +2,6 @@
 import DialogModal from "@/Components/DialogModal.vue";
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
-import SelectInput from "@/Components/SelectInput.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import DropdownLoader from "@/Components/DropdownLoader.vue";
@@ -20,7 +19,6 @@ const props = defineProps({
 
 const form = useForm({
     employeeId: "",
-    type: "",
     registrationNumber: "",
     recommendationNumber: "",
     validFrom: "",
@@ -29,7 +27,6 @@ const form = useForm({
 });
 
 const statuse = computed(() => Object.entries(props.statuses).map(([value, label]) => ({label, value})));
-const typee = computed(() => Object.entries(props.types).map(([value, label]) => ({label, value})));
 const submit = () => {
     form.post(route("license.store"), {
         preserveScroll: true,
@@ -66,15 +63,6 @@ const closeModal = () => {
                                 :error="form.errors.employeeId"
                         />
                         <InputError :message="form.errors.employeeId"/>
-                    </div>
-                    <div class="space-y-1">
-                        <InputLabel for="type" :value="lang().label.type"/>
-                        <SelectInput id="type" v-model="form.type"
-                                     :dataSet="typee"
-                                     class="block w-full"
-                                     :error="form.errors.type"
-                        />
-                        <InputError :message="form.errors.type"/>
                     </div>
                     <div class="space-y-1">
                         <InputLabel for="registrationNumber" :value="lang().label.registrationNumber"/>

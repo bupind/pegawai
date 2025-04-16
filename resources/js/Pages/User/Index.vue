@@ -5,10 +5,10 @@ import Breadcrumb from "@/Layouts/Authenticated/Breadcrumb.vue";
 import SelectInput from "@/Components/SelectInput.vue";
 import TablePagination from "@/Components/TablePagination.vue";
 import TextInput from "@/Components/TextInput.vue";
-import Create from "@/Pages/Admin/Create.vue";
-import Edit from "@/Pages/Admin/Edit.vue";
-import Delete from "@/Pages/Admin/Delete.vue";
-import DeleteBulk from "@/Pages/Admin/DeleteBulk.vue";
+import Create from "@/Pages/User/Create.vue";
+import Edit from "@/Pages/User/Edit.vue";
+import Delete from "@/Pages/User/Delete.vue";
+import DeleteBulk from "@/Pages/User/DeleteBulk.vue";
 import {reactive, ref, watch} from "vue";
 import pkg from "lodash";
 import {router} from "@inertiajs/vue3";
@@ -49,7 +49,7 @@ watch(
     () => _.cloneDeep(data.params),
     debounce(() => {
         let params = pickBy(data.params);
-        router.get(route("admin.index"), params, {
+        router.get(route("user.index"), params, {
             replace: true,
             preserveState: true,
             preserveScroll: true,
@@ -92,7 +92,8 @@ const select = () => {
                             <div class="flex shrink-0 rounded overflow-hidden">
                                 <SelectInput v-model="data.params.perPage" :dataSet="$page.props.app.perpage"
                                              class="h-9 text-sm px-3"/>
-                                <Create v-show="can(['user create'])" :title="props.title"/>
+                                <Create v-show="can(['user create'])" :title="props.title"
+                                />
                                 <DeleteBulk v-show=" data.selectedId.length != 0 && can(['user delete'])"
                                             :selectedId="data.selectedId"
                                             :title="props.title"

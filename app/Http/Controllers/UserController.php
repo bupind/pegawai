@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Admin\UserIndexRequest;
-use App\Http\Requests\Admin\UserStoreRequest;
-use App\Http\Requests\Admin\UserUpdateRequest;
+use App\Http\Requests\User\UserIndexRequest;
+use App\Http\Requests\User\UserStoreRequest;
+use App\Http\Requests\User\UserUpdateRequest;
+use App\Models\Bumn;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -12,7 +13,7 @@ use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
 use Throwable;
 
-class AdminController extends Controller
+class UserController extends Controller
 {
 
     public function __construct()
@@ -29,8 +30,7 @@ class AdminController extends Controller
     public function index(UserIndexRequest $request)
     {
         $perPage = $request->input('perPage', 10);
-
-        $users = User::role(User::ROLE_SUPERUSER)->when($request->filled('search'), function($query) use ($request) {
+        $users   = User::role(User::ROLE_PEGAWAI)->when($request->filled('search'), function($query) use ($request) {
             $query->where(function($q) use ($request) {
                 $q->where('first_name', 'LIKE', "%" . $request->search . "%")
                     ->orWhere('last_name', 'LIKE', "%" . $request->search . "%")
@@ -41,14 +41,15 @@ class AdminController extends Controller
             $query->orderBy($request->field, $request->order);
         })->paginate($perPage)->onEachSide(0);
 
-        return Inertia::render('Admin/Index', [
-            'title'       => __('app.label.admin'),
+        return Inertia::render('User/Index', [
+            'title'       => __('app.label.user'),
             'filters'     => $request->only(['search', 'field', 'order']),
             'perPage'     => (int)$perPage,
             'users'       => $users,
-            'breadcrumbs' => [['label' => __('app.label.admin'), 'href' => route('admin.index')]],
+            'breadcrumbs' => [['label' => __('app.label.user'), 'href' => route('user.index')]],
         ]);
     }
+
 
     /**
      * Store a newly created resource in storage.
@@ -65,7 +66,7 @@ class AdminController extends Controller
                 'email_verified_at' => now(),
                 'password'          => Hash::make($request->password),
             ]);
-            $user->assignRole(User::ROLE_SUPERUSER);
+            $user->assignRole(User::ROLE_PEGAWAI);
             DB::commit();
             return back()->with('success', __('app.label.created_successfully', ['name' => $user->name]));
         } catch(Throwable $th) {
@@ -123,14 +124,12 @@ class AdminController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-
-    public function destroy($id)
+    public function destroy(User $user)
     {
         try {
-            $users = User::findOrFail($id);
-            $users->delete();
+            $user->delete();
             return back()->with('success', __('app.label.deleted_successfully'));
-        } catch(\Throwable $th) {
+        } catch(Throwable $th) {
             return back()->with('error', __('app.label.deleted_error') . $th->getMessage());
         }
     }

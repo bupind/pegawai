@@ -19,7 +19,7 @@ const props = defineProps({
 
 const form = useForm({
     employeeId: "",
-    type: "",
+    employeeType: "",
     registrationNumber: "",
     competence: "",
     validFrom: "",
@@ -29,12 +29,12 @@ const form = useForm({
 onUpdated(() => {
     if (show) {
         form.employeeId = props.registrationcertificate?.employee.name;
-        form.type = props.registrationcertificate?.type;
+        form.employeeType = props.registrationcertificate?.employee.type;
         form.registrationNumber = props.registrationcertificate?.registrationNumber;
         form.competence = props.registrationcertificate?.competence;
         form.validFrom = props.registrationcertificate?.validFrom;
         form.validUntil = props.registrationcertificate?.validUntil;
-        form.status = props.registrationcertificate?.status;
+        form.status = props.registrationcertificate?.calculatedStatus;
     }
 });
 
@@ -53,56 +53,43 @@ const closeModal = () => {
             <template #title>
                 {{ lang().label.read }} {{ props.title }}
             </template>
-
             <template #content>
-
-                <div class="space-y-1">
-                    <InputLabel :value="lang().label.Employee" for="employeeId"/>
-                    <p class="text-sm text-gray-800 dark:text-gray-200">
-                        {{ form.employeeId || "-" }}
-                    </p>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full text-sm text-left text-gray-800 dark:text-gray-200 border">
+                        <tbody>
+                        <tr class="border-b">
+                            <th class="px-4 py-2 w-1/3 font-medium">{{ lang().label.employee }}</th>
+                            <td class="px-4 py-2">{{ form.employeeId || "-" }}</td>
+                        </tr>
+                        <tr class="border-b">
+                            <th class="px-4 py-2 w-1/3 font-medium">{{ lang().label.type }}</th>
+                            <td class="px-4 py-2">{{ props.types[form.employeeType] || "-" }}</td>
+                        </tr>
+                        <tr class="border-b">
+                            <th class="px-4 py-2 font-medium">{{ lang().label.registrationNumber }}</th>
+                            <td class="px-4 py-2">{{ form.registrationNumber || "-" }}</td>
+                        </tr>
+                        <tr class="border-b">
+                            <th class="px-4 py-2 font-medium">{{ lang().label.competence }}</th>
+                            <td class="px-4 py-2">{{ form.competence || "-" }}</td>
+                        </tr>
+                        <tr class="border-b">
+                            <th class="px-4 py-2 font-medium">{{ lang().label.validFrom }}</th>
+                            <td class="px-4 py-2">{{ form.validFrom || "-" }}</td>
+                        </tr>
+                        <tr class="border-b">
+                            <th class="px-4 py-2 font-medium">{{ lang().label.validUntil }}</th>
+                            <td class="px-4 py-2">{{ form.validUntil || "-" }}</td>
+                        </tr>
+                        <tr>
+                            <th class="px-4 py-2 font-medium">{{ lang().label.status }}</th>
+                            <td class="px-4 py-2">{{ props.statuses[form.status] || "-" }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
-                <div class="space-y-1">
-                    <InputLabel for="type" :value="lang().label.type"/>
-                    <p class="text-sm text-gray-800 dark:text-gray-200">
-                        {{ props.types[form.type] || "-" }}
-                    </p>
-                </div>
-                <div>
-                    <InputLabel :value="lang().label.registrationNumber"/>
-                    <p class="text-sm text-gray-800 dark:text-gray-200">
-                        {{ form.registrationNumber || "-" }}
-                    </p>
-                </div>
-
-                <div>
-                    <InputLabel :value="lang().label.competence"/>
-                    <p class="text-sm text-gray-800 dark:text-gray-200">
-                        {{ form.competence || "-" }}
-                    </p>
-                </div>
-                <div class="flex gap-4">
-                    <div class="w-1/2">
-                        <InputLabel :value="lang().label.validFrom"/>
-                        <p class="text-sm text-gray-800 dark:text-gray-200">
-                            {{ form.validFrom || "-" }}
-                        </p>
-                    </div>
-                    <div class="w-1/2">
-                        <InputLabel :value="lang().label.validUntil"/>
-                        <p class="text-sm text-gray-800 dark:text-gray-200">
-                            {{ form.validUntil || "-" }}
-                        </p>
-                    </div>
-                </div>
-                <div class="space-y-1">
-                    <InputLabel for="status" :value="lang().label.status"/>
-                    <p class="text-sm text-gray-800 dark:text-gray-200">
-                        {{ props.statuses[form.status] || "-" }}
-                    </p>
-                </div>
-
             </template>
+
         </DialogModal>
     </div>
 </template>

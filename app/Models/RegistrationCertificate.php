@@ -11,8 +11,8 @@ class RegistrationCertificate extends Model
 {
     use HasFactory;
 
-    const STATUS_ACTIVE   = 'active';
-    const STATUS_INACTIVE = 'inactive';
+    const STATUS_VALID    = 'valid';
+    const STATUS_INACTIVE = 'nearExpiration';
     const STATUS_EXPIRED  = 'expired';
 
     const TYPE_NURSE   = 'nurse';
@@ -22,7 +22,6 @@ class RegistrationCertificate extends Model
     protected $table    = 'registration_certificate';
     protected $fillable = [
         'employeeId',
-        'type',
         'registrationNumber',
         'competence',
         'validFrom',
@@ -34,24 +33,24 @@ class RegistrationCertificate extends Model
     public static function statuses()
     {
         return [
-            self::STATUS_ACTIVE   => __('Berlaku'),
-            self::STATUS_INACTIVE => __('Akan Kadaluarsa'),
-            self::STATUS_EXPIRED  => __('Tidak Berlaku'),
+            self::STATUS_VALID    => __('app.label.valid'),
+            self::STATUS_INACTIVE => __('app.label.near_expiration'),
+            self::STATUS_EXPIRED  => __('app.label.invalid'),
         ];
     }
 
     public static function types()
     {
         return [
-            self::TYPE_NURSE   => __('Perawat'),
-            self::TYPE_DOCTOR  => __('Dokter'),
-            self::TYPE_MEDICAL => __('Penunjang Medis'),
+            self::TYPE_NURSE   => __('app.label.nurse'),
+            self::TYPE_DOCTOR  => __('app.label.doctor'),
+            self::TYPE_MEDICAL => __('app.label.medical_support'),
         ];
     }
 
     public function scopeActive($query)
     {
-        return $query->where('status', self::STATUS_ACTIVE);
+        return $query->where('status', self::STATUS_VALID);
     }
 
     public function getCreatedAtAttribute()

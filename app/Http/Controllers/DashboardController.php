@@ -27,31 +27,45 @@ class DashboardController extends Controller
             $months->push(now()->subMonths($i)->format('Y-m'));
         }
 
-        $maleEmployees   = Employee::where('gender', 'male')->count();
-        $femaleEmployees = Employee::where('gender', 'female')->count();
+        $maleEmployees   = Employee::where('gender', Employee::GENDER_MALE)->count();
+        $femaleEmployees = Employee::where('gender', Employee::GENDER_FEMALE)->count();
 
         $certificateStats = $this->calculateMonthlyStatus(RegistrationCertificate::class, $months);
         $licenseStats     = $this->calculateMonthlyStatus(License::class, $months);
-        $certificatePie   = [
-            'active'   => RegistrationCertificate::where('status', RegistrationCertificate::STATUS_ACTIVE)->count(),
-            'inactive' => RegistrationCertificate::where('status', RegistrationCertificate::STATUS_INACTIVE)->count(),
-            'expired'  => RegistrationCertificate::where('status', RegistrationCertificate::STATUS_EXPIRED)->count(),
-        ];
-        $licensePie       = [
-            'active'   => License::where('status', License::STATUS_ACTIVE)->count(),
-            'inactive' => License::where('status', License::STATUS_INACTIVE)->count(),
-            'expired'  => License::where('status', License::STATUS_EXPIRED)->count(),
+
+        $certificatePie = [
+            License::STATUS_VALID    => $this->contByStatus(RegistrationCertificate::class, RegistrationCertificate::STATUS_VALID),
+            License::STATUS_INACTIVE => $this->contByStatus(RegistrationCertificate::class, RegistrationCertificate::STATUS_INACTIVE),
+            License::STATUS_EXPIRED  => $this->contByStatus(RegistrationCertificate::class, RegistrationCertificate::STATUS_EXPIRED),
         ];
 
+        $licensePie = [
+            License::STATUS_VALID    => $this->contByStatus(License::class, License::STATUS_VALID),
+            License::STATUS_INACTIVE => $this->contByStatus(License::class, License::STATUS_INACTIVE),
+            License::STATUS_EXPIRED  => $this->contByStatus(License::class, License::STATUS_EXPIRED),
+        ];
         $licenses    = [];
         $certificate = [];
         if($dataType === 'licency') {
-            $query = License::with('employee')->where('status', $status);
-            $query->orderBy($field, $order);
-            $licenses = $query->get()->map(function($item) {
+            $today = Carbon::today();
+            $date  = $today->copy()->addDays(180);
+
+            $query = License::with('employee');
+
+            if($status === License::STATUS_EXPIRED) {
+                $query->where('validUntil', '<', $today);
+            }
+            elseif($status === License::STATUS_INACTIVE) {
+                $query->whereBetween('validUntil', [$today, $date]);
+            }
+            elseif($status === License::STATUS_VALID) {
+                $query->where('validUntil', '>', $date);
+            }
+
+            $licenses = $query->orderBy($field, $order)->get()->map(function($item) {
                 return [
                     'name'               => $item->employee->name ?? '-',
-                    'type'               => License::types()[$item->type],
+                    'type'               => License::types()[$item->employee->type] ?? '-',
                     'registrationNumber' => $item->registrationNumber,
                     'validFrom'          => $item->validFrom,
                     'validUntil'         => $item->validUntil
@@ -59,12 +73,23 @@ class DashboardController extends Controller
             })->values();
         }
         if($dataType === 'certificate') {
-            $query = RegistrationCertificate::with('employee')->where('status', $status);
-            $query->orderBy($field, $order);
-            $certificate = $query->get()->map(function($item) {
+            $today = Carbon::today();
+            $date  = $today->copy()->addDays(180);
+            $query = RegistrationCertificate::with('employee');
+            if($status === License::STATUS_EXPIRED) {
+                $query->where('validUntil', '<', $today);
+            }
+            elseif($status === License::STATUS_INACTIVE) {
+                $query->whereBetween('validUntil', [$today, $date]);
+            }
+            elseif($status === License::STATUS_VALID) {
+                $query->where('validUntil', '>', $date);
+            }
+
+            $certificate = $query->orderBy($field, $order)->get()->map(function($item) {
                 return [
                     'name'               => $item->employee->name ?? '-',
-                    'type'               => RegistrationCertificate::types()[$item->type],
+                    'type'               => RegistrationCertificate::types()[$item->employee->type] ?? '-',
                     'registrationNumber' => $item->registrationNumber,
                     'competence'         => $item->competence,
                     'validFrom'          => $item->validFrom,
@@ -75,237 +100,134 @@ class DashboardController extends Controller
 
         return Inertia::render('Dashboard/Dashboard', [
             'userRole'      => $role,
-            'lineChartData' => [
-                ['name' => 'Sertifikat Berlaku', 'data' => $certificateStats['active']],
-                ['name' => 'Sertifikat Akan Kadaluarsa', 'data' => $certificateStats['inactive']],
-                ['name' => 'Sertifikat Tidak Berlaku', 'data' => $certificateStats['expired']],
-                ['name' => 'Izin Berlaku', 'data' => $licenseStats['active']],
-                ['name' => 'Izin Akan Kadaluarsa', 'data' => $licenseStats['inactive']],
-                ['name' => 'Izin Tidak Berlaku', 'data' => $licenseStats['expired']],
-            ],
-            'pieCharts'     => [
-                'genderDistribution' => [
-                    ['label' => 'Laki-laki', 'value' => $maleEmployees],
-                    ['label' => 'Perempuan', 'value' => $femaleEmployees],
-                ],
-                'certificateStatus'  => [
-                    ['label' => 'Berlaku', 'value' => $certificatePie['active']],
-                    ['label' => 'Akan Kadaluarsa', 'value' => $certificatePie['inactive']],
-                    ['label' => 'Tidak Berlaku', 'value' => $certificatePie['expired']],
-                ],
-                'licenseStatus'      => [
-                    ['label' => 'Berlaku', 'value' => $licensePie['active']],
-                    ['label' => 'Akan Kadaluarsa', 'value' => $licensePie['inactive']],
-                    ['label' => 'Tidak Berlaku', 'value' => $licensePie['expired']],
-                ],
-            ],
+            'lineChartData' => $this->generateLineChartData($certificateStats, $licenseStats),
+            'pieCharts'     => $this->generatePieCharts($maleEmployees, $femaleEmployees, $certificatePie, $licensePie),
+            'statuses'      => RegistrationCertificate::statuses(),
             'licenses'      => $licenses,
             'certificates'  => $certificate,
         ]);
     }
 
+    private function contByStatus($model, $status)
+    {
+        $today = Carbon::today();
+        $date  = $today->copy()->addDays(180);
+
+        if($status === License::STATUS_EXPIRED) {
+            $count = $model::where('validUntil', '<', $today)->count();
+        }
+        elseif($status === License::STATUS_INACTIVE) {
+            $count = $model::where('validUntil', '<', $date)->where('validUntil', '>', $today)->count();
+        }
+        elseif($status === License::STATUS_VALID) {
+            $count = $model::where('validUntil', '>', $date)->count();
+        }
+        else {
+            $count = 0;
+        }
+
+        return $count;
+    }
+
     private function calculateMonthlyStatus($model, $months)
     {
         $result = [
-            'active'   => [],
-            'inactive' => [],
-            'expired'  => [],
+            License::STATUS_VALID    => [],
+            License::STATUS_INACTIVE => [],
+            License::STATUS_EXPIRED  => [],
         ];
+
+        $today     = Carbon::today();
+        $nearLimit = $today->copy()->addDays(180);
+
+        $start = Carbon::parse($months->first())->startOfMonth();
+        $end   = Carbon::parse($months->last())->endOfMonth();
+
+        $items = $model::whereDate('validFrom', '<=', $end)->whereDate('validUntil', '>=', $start)->get();
 
         foreach($months as $month) {
             $startOfMonth = Carbon::parse($month)->startOfMonth();
             $endOfMonth   = Carbon::parse($month)->endOfMonth();
 
-            $active = $model::where('status', $model::STATUS_ACTIVE)->whereDate('validFrom', '<=', $endOfMonth)
-                ->whereDate('validUntil', '>=', $startOfMonth)->count();
+            $active   = 0;
+            $inactive = 0;
+            $expired  = 0;
 
-            $inactive = $model::where('status', $model::STATUS_ACTIVE)->whereDate('validUntil', '>', $endOfMonth)
-                ->whereDate('validUntil', '<=', $endOfMonth->copy()->addDays(30))->count();
+            foreach($items as $item) {
+                $validFrom  = Carbon::parse($item->validFrom);
+                $validUntil = Carbon::parse($item->validUntil);
 
-            $expired = $model::whereDate('validUntil', '<', $startOfMonth)->count();
+                // Harus valid di bulan ini
+                if($validFrom->lte($endOfMonth) && $validUntil->gte($startOfMonth)) {
+                    if($validUntil->lt($today)) {
+                        $expired++;
+                    }
+                    elseif($validUntil->lte($nearLimit)) {
+                        $inactive++;
+                    }
+                    else {
+                        $active++;
+                    }
+                }
+            }
 
-            $result['active'][]   = ['date' => $month, 'total' => $active];
-            $result['inactive'][] = ['date' => $month, 'total' => $inactive];
-            $result['expired'][]  = ['date' => $month, 'total' => $expired];
+            $result[License::STATUS_VALID][]    = ['date' => $month, 'total' => $active];
+            $result[License::STATUS_INACTIVE][] = ['date' => $month, 'total' => $inactive];
+            $result[License::STATUS_EXPIRED][]  = ['date' => $month, 'total' => $expired];
         }
 
         return $result;
     }
 
-    public function employee(Request $request)
+    private function generateLineChartData($certificateStats, $licenseStats)
     {
-        $perPage = (int)$request->input('perPage', 10);
-        $user    = auth()->user();
-        $role    = $user->getRoleNames()->first();
+        return [
+            ['name' => __('app.label.valid_certificate'), 'data' => $certificateStats[License::STATUS_VALID]],
+            ['name' => __('app.label.expiring_certificate'), 'data' => $certificateStats[License::STATUS_INACTIVE]],
+            ['name' => __('app.label.invalid_certificate'), 'data' => $certificateStats[License::STATUS_EXPIRED]],
 
-        $startDate         = $request->query('start_date', now()->subDays(6)->toDateString());
-        $endDate           = $request->query('end_date', now()->toDateString());
-        $maleEmployees     = Employee::where('gender', 'male')->count();
-        $femaleEmployees   = Employee::where('gender', 'female')->count();
-        $activeEmployees   = Employee::where('status', Employee::STATUS_ACTIVE)->count();
-        $inactiveEmployees = Employee::where('status', Employee::STATUS_INACTIVE)->count();
-        $dates             = collect();
-        for($i = 6; $i >= 0; $i--) {
-            $dates->push(now()->subDays($i)->toDateString());
-        }
-
-        $initialEmployeeCount = Employee::where('status', Employee::STATUS_ACTIVE)->count();
-
-        $employeesRaw = Employee::where('status', Employee::STATUS_ACTIVE)->whereBetween('created_at', [
-            $startDate,
-            $endDate
-        ])->selectRaw('DATE(created_at) as date, COUNT(*) as total')->groupBy('date')->pluck('total', 'date')
-            ->toArray();
-
-        $formattedEmployees = [];
-        $cumulativeTotal    = $initialEmployeeCount;
-        foreach($dates as $date) {
-            $cumulativeTotal      += $employeesRaw[$date] ?? 0;
-            $formattedEmployees[] = ['date' => $date, 'total' => $cumulativeTotal];
-        }
-
-        $employeeTable = Employee::query()->when($request->filled('search'), function($query) use ($request) {
-            $search = "%" . $request->search . "%";
-            $query->where(function($q) use ($search) {
-                $q->where('created_at', 'LIKE', $search)->orWhere('code', 'LIKE', $search)
-                    ->orWhere('name', 'LIKE', $search)->orWhere('gender', 'LIKE', $search);
-            });
-        })->when($request->filled(['field', 'order']), function($query) use ($request) {
-            $query->orderBy($request->field, $request->order);
-        })->paginate($perPage)->onEachSide(0);
-
-
-        return Inertia::render('Dashboard/Employee', [
-            'userRole'      => $role,
-            'title'         => __('app.label.employee'),
-            'perPage'       => (int)$perPage,
-            'filters'       => $request->only(['search', 'field', 'order']),
-            'pieCharts'     => [
-                'genderDistribution' => [
-                    ['label' => 'Laki-laki', 'value' => $maleEmployees],
-                    ['label' => 'Perempuan', 'value' => $femaleEmployees],
-                ],
-                'statusDistribution' => [
-                    ['label' => 'Aktif', 'value' => $activeEmployees],
-                    ['label' => 'Non-Aktif', 'value' => $inactiveEmployees],
-                ],
-            ],
-            'lineChartData' => [
-                ['name' => 'Total Pegawai', 'data' => $formattedEmployees],
-            ],
-            'genders'       => Employee::genders(),
-            'statuses'      => Employee::statuses(),
-            'employeeTable' => $employeeTable,
-        ]);
+            ['name' => __('app.label.valid_license'), 'data' => $licenseStats[License::STATUS_VALID]],
+            ['name' => __('app.label.expiring_license'), 'data' => $licenseStats[License::STATUS_INACTIVE]],
+            ['name' => __('app.label.invalid_license'), 'data' => $licenseStats[License::STATUS_EXPIRED]],
+        ];
     }
 
-    public function certificates(Request $request)
+    private function generatePieCharts($maleEmployees, $femaleEmployees, $certificatePie, $licensePie)
     {
-        $perPage = (int)$request->input('perPage', 10);
-        $user    = auth()->user();
-        $role    = $user->getRoleNames()->first();
-
-        $validCertificates            = RegistrationCertificate::where('status', RegistrationCertificate::STATUS_ACTIVE)
-            ->whereDate('validUntil', '>=', now())->count();
-        $expiredCertificates          = RegistrationCertificate::where('status', RegistrationCertificate::STATUS_ACTIVE)
-            ->whereDate('validUntil', '<', now())->count();
-        $employeesWithCertificates    = Employee::whereHas('certificates')->count();
-        $employeesWithoutCertificates = Employee::doesntHave('certificates')->count();
-        $dates                        = collect();
-        for($i = 6; $i >= 0; $i--) {
-            $dates->push(now()->subDays($i)->toDateString());
-        }
-        $formattedCertificates = $this->calculateCumulativeData(RegistrationCertificate::class, 'validFrom', 'validUntil', $dates);
-        $certificateTable      = RegistrationCertificate::with('employee')
-            ->when($request->filled('search'), function($query) use ($request) {
-                $search = "%" . $request->search . "%";
-                $query->where(function($q) use ($search) {
-                    $q->where('created_at', 'LIKE', $search)->orWhere('status', 'LIKE', $search);
-                })->orWhereHas('employee', function($q) use ($search) {
-                    $q->where('name', 'LIKE', $search)->orWhere('code', 'LIKE', $search);
-                });
-            })->when($request->filled(['field', 'order']), function($query) use ($request) {
-                $query->orderBy($request->field, $request->order);
-            })->paginate($perPage)->onEachSide(0);
-
-
-        return Inertia::render('Dashboard/Certificate', [
-            'userRole'         => $role,
-            'title'            => __('app.label.certificate'),
-            'perPage'          => (int)$perPage,
-            'filters'          => $request->only(['search', 'field', 'order']),
-            'pieCharts'        => [
-                'certificateValidity'  => [
-                    ['label' => 'Sertifikat Berlaku', 'value' => $validCertificates],
-                    ['label' => 'Sertifikat Kadaluarsa', 'value' => $expiredCertificates],
+        return [
+            'genderDistribution' => [
+                ['label' => Employee::genders()[Employee::GENDER_MALE], 'value' => $maleEmployees],
+                ['label' => Employee::genders()[Employee::GENDER_FEMALE], 'value' => $femaleEmployees],
+            ],
+            'certificateStatus'  => [
+                [
+                    'label' => License::statuses()[License::STATUS_VALID],
+                    'value' => $certificatePie[License::STATUS_VALID]
                 ],
-                'certificateOwnership' => [
-                    ['label' => 'Memiliki Sertifikat', 'value' => $employeesWithCertificates],
-                    ['label' => 'Belum Memiliki Sertifikat', 'value' => $employeesWithoutCertificates],
+                [
+                    'label' => License::statuses()[License::STATUS_INACTIVE],
+                    'value' => $certificatePie[License::STATUS_INACTIVE]
+                ],
+                [
+                    'label' => License::statuses()[License::STATUS_EXPIRED],
+                    'value' => $certificatePie[License::STATUS_EXPIRED]
                 ],
             ],
-            'lineChartData'    => [
-                ['name' => 'Total Surat Tanda Registrasi', 'data' => $formattedCertificates],
+            'licenseStatus'      => [
+                [
+                    'label' => RegistrationCertificate::statuses()[RegistrationCertificate::STATUS_VALID],
+                    'value' => $licensePie[RegistrationCertificate::STATUS_VALID]
+                ],
+                [
+                    'label' => RegistrationCertificate::statuses()[RegistrationCertificate::STATUS_INACTIVE],
+                    'value' => $licensePie[RegistrationCertificate::STATUS_INACTIVE]
+                ],
+                [
+                    'label' => RegistrationCertificate::statuses()[RegistrationCertificate::STATUS_EXPIRED],
+                    'value' => $licensePie[RegistrationCertificate::STATUS_EXPIRED]
+                ],
             ],
-            'certificateTable' => $certificateTable,
-            'types'            => RegistrationCertificate::types(),
-            'statuses'         => RegistrationCertificate::statuses(),
-        ]);
+        ];
     }
-
-    public function licenses(Request $request)
-    {
-        $perPage                  = (int)$request->input('perPage', 10);
-        $user                     = auth()->user();
-        $role                     = $user->getRoleNames()->first();
-        $validLicenses            = License::where('status', License::STATUS_ACTIVE)
-            ->whereDate('validUntil', '>=', now())->count();
-        $expiredLicenses          = License::where('status', License::STATUS_ACTIVE)
-            ->whereDate('validUntil', '<', now())->count();
-        $employeesWithLicenses    = Employee::whereHas('licenses')->count();
-        $employeesWithoutLicenses = Employee::doesntHave('licenses')->count();
-
-        $dates = collect();
-        for($i = 6; $i >= 0; $i--) {
-            $dates->push(now()->subDays($i)->toDateString());
-        }
-        $formattedLicenses = $this->calculateCumulativeData(License::class, 'validFrom', 'validUntil', $dates);
-        $licenseTable      = License::with('employee')->when($request->filled('search'), function($query) use (
-            $request
-        ) {
-            $search = "%" . $request->search . "%";
-            $query->where(function($q) use ($search) {
-                $q->where('created_at', 'LIKE', $search)->orWhere('status', 'LIKE', $search);
-            })->orWhereHas('employee', function($q) use ($search) {
-                $q->where('name', 'LIKE', $search)->orWhere('code', 'LIKE', $search);
-            });
-        })->when($request->filled(['field', 'order']), function($query) use ($request) {
-            $query->orderBy($request->field, $request->order);
-        })->paginate($perPage)->onEachSide(0);
-
-        return Inertia::render('Dashboard/License', [
-            'userRole'      => $role,
-            'title'         => __('app.label.license'),
-            'perPage'       => (int)$perPage,
-            'filters'       => $request->only(['search', 'field', 'order']),
-            'pieCharts'     => [
-                'licenseValidity'  => [
-                    ['label' => 'Lisensi Berlaku', 'value' => $validLicenses],
-                    ['label' => 'Lisensi Kadaluarsa', 'value' => $expiredLicenses],
-                ],
-                'licenseOwnership' => [
-                    ['label' => 'Memiliki Lisensi', 'value' => $employeesWithLicenses],
-                    ['label' => 'Belum Memiliki Lisensi', 'value' => $employeesWithoutLicenses],
-                ],
-            ],
-            'lineChartData' => [
-                ['name' => 'Total Employee Licenses', 'data' => $formattedLicenses],
-            ],
-            'licenseTable'  => $licenseTable,
-            'types'         => License::types(),
-            'statuses'      => License::statuses(),
-        ]);
-    }
-
 
 }

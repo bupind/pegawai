@@ -23,9 +23,14 @@ const props = defineProps({
     datas: Object,
     breadcrumbs: Object,
     statuses: Object,
+    types: Object,
     genders: Object,
+    canLogin: String,
     perPage: Number,
 });
+
+console.log(props.canLogin)
+
 const showSearch = ref(false);
 const toggleSearch = () => {
     showSearch.value = !showSearch.value;
@@ -86,6 +91,7 @@ const headers = [
     {label: 'Code', ordered: 'code'},
     {label: 'Employee', ordered: 'name'},
     {label: 'Gender', ordered: 'gender'},
+    {label: 'Type', ordered: 'type'},
     {label: 'Status', ordered: 'status'},
 ];
 
@@ -93,6 +99,7 @@ const bodys = [
     {label: 'Code', value: (val) => val?.code || '-'},
     {label: 'Employee', value: (val) => val?.name || '-'},
     {label: 'Gender', value: (val) => props.genders[val.gender] || '-'},
+    {label: 'Type', value: (val) => props.types[val.type] || '-'},
     {label: 'status', value: (val) => props.statuses[val.status] || '-'},
 ];
 
@@ -116,9 +123,9 @@ const bodys = [
                                 <SelectInput v-model="data.params.perPage" :dataSet="$page.props.app.perpage"
                                              class="h-9 text-sm px-3"/>
                                 <Create v-show="can(['employee create'])" :title="props.title"
-                                        :statuses="props.statuses" :genders="props.genders"/>
-                                <DeleteBulk v-show=" data.selectedId.length != 0 && can(['license delete'])
-                                    "
+                                        :statuses="props.statuses" :genders="props.genders" :types="props.types" :canLogins="props.canLogin"/>
+
+                                <DeleteBulk v-show=" data.selectedId.length != 0 && can(['license delete'])"
                                             :selectedId="data.selectedId"
                                             :title="props.title"
                                             @close="
@@ -151,8 +158,8 @@ const bodys = [
                                     <div class="flex justify-between items-center">
                                         <span>{{ lang().label[col.label] }}</span>
                                         <ChevronUpDownIcon
-                                            v-if="col.ordered"
-                                            :class="{
+                                                v-if="col.ordered"
+                                                :class="{
         'rotate-180': data.params.field === col.ordered && data.params.order === 'desc',
         'text-black-500': data.params.field === col.ordered,
         'w-4 h-4': true,
@@ -178,10 +185,10 @@ const bodys = [
                                 <td class="whitespace-nowrap flex justify-end px-2 py-1">
                                     <div class="flex w-fit rounded overflow-hidden">
                                         <Edit v-show="can(['employee update'])" :title="props.title"
-                                              :statuses="props.statuses" :genders="props.genders"
+                                              :statuses="props.statuses" :genders="props.genders" :types="props.types" :canLogins="props.canLogin"
                                               :employee="data.employee" @open="data.employee = val"/>
                                         <View v-show="can(['employee read'])" :title="props.title"
-                                              :statuses="props.statuses" :genders="props.genders"
+                                              :statuses="props.statuses" :genders="props.genders" :types="props.types" :canLogins="props.canLogin"
                                               :employee="data.employee" @open="data.employee = val"/>
                                         <Delete v-show="can(['employee delete'])" :title="props.title"
                                                 :employee="data.val" @open="data.employee = val"/>

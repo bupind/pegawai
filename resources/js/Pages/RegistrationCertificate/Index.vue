@@ -88,13 +88,13 @@ const headers = [
 
 const bodys = [
     {label: 'Employee', value: (val) => val.employee?.name || '-'},
-    {label: 'type', value: (val) => props.types[val.type] || '-'},
+    {label: 'type', value: (val) => props.types[val.employee?.type] || '-'},
     {label: 'registrationNumber', value: (val) => val.registrationNumber || '-'},
     {label: 'competence', value: (val) => val.competence || '-'},
     {label: 'validFrom', value: (val) => val.validFrom || '-'},
     {label: 'validUntil', value: (val) => val.validUntil || '-'},
     {label: 'first_name', value: (val) => val.user?.first_name || '-'},
-    {label: 'status', value: (val) => props.statuses[val.status] || '-'},
+    {label: 'status', value: (val) => props.statuses[val.calculatedStatus] || '-'},
 ];
 
 
@@ -117,7 +117,7 @@ const bodys = [
                                 <SelectInput v-model="data.params.perPage" :dataSet="$page.props.app.perpage"
                                              class="h-9 text-sm px-3"/>
                                 <Create v-show="can(['registrationcertificate create'])" :title="props.title"
-                                        :statuses="props.statuses" :types="props.types"/>
+                                        :statuses="props.statuses"/>
                                 <DeleteBulk v-show=" data.selectedId.length != 0 && can(['registrationcertificate delete'])
                                     "
                                             :selectedId="data.selectedId"
@@ -144,7 +144,7 @@ const bodys = [
                                     />
 
                                     <select
-                                        v-model="data.params.status"
+                                        v-model="data.params.calculatedStatus"
                                         class="h-10 rounded-r-md border border-l-0 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm text-gray-700 dark:text-gray-200 px-2 focus:outline-none"
                                     >
                                         <option value="">Status</option>
@@ -191,12 +191,10 @@ const bodys = [
                                 <td class="whitespace-nowrap flex justify-end px-2 py-1">
                                     <div class="flex w-fit rounded overflow-hidden">
                                         <Edit v-show="can(['registrationcertificate update'])" :title="props.title"
-                                              :statuses="props.statuses" :types="props.types"
-                                              :registrationcertificate="data.dataValue"
+                                              :statuses="props.statuses" :registrationcertificate="data.dataValue"
                                               @open="data.dataValue = val"/>
                                         <View v-show="can(['registrationcertificate read'])" :title="props.title"
-                                              :statuses="props.statuses" :types="props.types"
-                                              :registrationcertificate="data.dataValue"
+                                              :statuses="props.statuses" :types="props.types" :registrationcertificate="data.dataValue"
                                               @open="data.dataValue = val"/>
 
                                         <Delete v-show="can(['registrationcertificate delete'])" :title="props.title"

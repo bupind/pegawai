@@ -15,7 +15,9 @@ class Employee extends Model
     protected $fillable = [
         'code',
         'name',
+        'type',
         'gender',
+        'user_id',
         'status',
     ];
 
@@ -25,19 +27,32 @@ class Employee extends Model
     const GENDER_MALE   = 'male';
     const GENDER_FEMALE = 'female';
 
+    const TYPE_NURSE   = 'nurse';
+    const TYPE_DOCTOR  = 'doctor';
+    const TYPE_MEDICAL = 'medical';
+
     public static function statuses(): array
     {
         return [
-            self::STATUS_ACTIVE   => __('Aktif'),
-            self::STATUS_INACTIVE => __('Tidak Aktif'),
+            self::STATUS_ACTIVE   => __('app.label.active'),
+            self::STATUS_INACTIVE => __('app.label.inactive'),
         ];
     }
 
     public static function genders(): array
     {
         return [
-            self::GENDER_MALE   => __('Laki Laki'),
-            self::GENDER_FEMALE => __('Perempuan'),
+            self::GENDER_MALE   => __('app.label.male'),
+            self::GENDER_FEMALE => __('app.label.female'),
+        ];
+    }
+
+    public static function types()
+    {
+        return [
+            self::TYPE_NURSE   => __('app.label.nurse'),
+            self::TYPE_DOCTOR  => __('app.label.doctor'),
+            self::TYPE_MEDICAL => __('app.label.medical_support'),
         ];
     }
 
@@ -58,7 +73,7 @@ class Employee extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
     public function certificates()

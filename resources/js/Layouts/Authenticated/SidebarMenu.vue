@@ -42,6 +42,7 @@ const menus = [
         submenus: [
             {label: "admin", route: "admin.index", permission: "user read"},
             {label: "role", route: "role.index", permission: "role read"},
+            {label: "user", route: "user.index", permission: "user read"},
             {label: "permission", route: "permission.index", permission: "permission read"}
         ]
     },

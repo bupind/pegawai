@@ -53,8 +53,8 @@ const close = () => {
             </div>
         </div>
 
-        <div class="p-4">
-            <slot name="content" />
+        <div class="p-4 max-h-[70vh] overflow-y-auto">
+            <slot name="content"/>
         </div>
 
         <template v-if="$slots.footer">

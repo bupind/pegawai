@@ -15,14 +15,11 @@ import {PlusIcon} from "@heroicons/vue/24/outline";
 const show = ref(false);
 const props = defineProps({
     title: String,
-    types: Object,
 });
 
 const statuse = computed(() => Object.entries(props.statuses).map(([value, label]) => ({label, value})));
-const typee = computed(() => Object.entries(props.types).map(([value, label]) => ({label, value})));
 const form = useForm({
     employeeId: "",
-    type: "",
     registrationNumber: "",
     competence: "",
     validFrom: "",
@@ -68,15 +65,6 @@ const closeModal = () => {
                                 :error="form.errors.employeeId"
                         />
                         <InputError :message="form.errors.employeeId"/>
-                    </div>
-                    <div class="space-y-1">
-                        <InputLabel for="type" :value="lang().label.type"/>
-                        <SelectInput id="type" v-model="form.type"
-                                     :dataSet="typee"
-                                     class="block w-full"
-                                     :error="form.errors.type"
-                        />
-                        <InputError :message="form.errors.type"/>
                     </div>
                     <div class="flex gap-1">
                         <div class="w-1/2">

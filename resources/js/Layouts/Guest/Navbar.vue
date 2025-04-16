@@ -52,7 +52,6 @@ const logout = () => {
                 </div>
             </div>
             <nav :class="data.isOpen ? '' : 'hidden'" class="relative sm:flex items-center space-y-2 sm:space-y-0 gap-2 py-4 sm:py-0">
-                <NavbarLink :href="route('login')" label="About"/>
                 <div v-if="$page.props.auth.user" class="relative">
                     <button @click="isOpen = !isOpen"
                             class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-black/20 rounded-md hover:bg-black/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75"
@@ -80,7 +79,6 @@ const logout = () => {
                 </div>
                 <template v-else>
                     <NavbarLink v-if="route().has('login')" :href="route('login')" label="Login"/>
-                    <NavbarLink v-if="route().has('register')" :href="route('register')" label="Register"/>
                 </template>
                 <SwitchDarkMode class="hidden sm:block" />
             </nav>

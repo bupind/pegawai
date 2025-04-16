@@ -11,14 +11,26 @@ class Setting extends Model
 {
     use HasFactory;
 
+    const LOGIN_TRUE  = 'true';
+    const LOGIN_FALSE = 'false';
+
     protected $fillable = [
         'user_id',
         'logo',
         'favicon',
         'name',
+        'employeecanlogin',
         'short_name',
         'description'
     ];
+
+    public static function canLogin(): array
+    {
+        return [
+            self::LOGIN_TRUE  => __('app.label.true'),
+            self::LOGIN_FALSE => __('app.label.false'),
+        ];
+    }
 
     protected $appends = ['full_path_logo', 'full_path_favicon'];
 

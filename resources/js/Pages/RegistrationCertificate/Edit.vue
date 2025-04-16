@@ -17,14 +17,12 @@ const show = ref(false);
 const props = defineProps({
     title: String,
     statuses: Object,
-    types: Object,
     registrationcertificate: Object,
 });
 
 const typee = computed(() => Object.entries(props.types).map(([value, label]) => ({label, value})));
 const form = useForm({
     employeeId: "",
-    type: "",
     registrationNumber: "",
     competence: "",
     validFrom: "",
@@ -33,7 +31,6 @@ const form = useForm({
 onUpdated(() => {
     if (show) {
         form.employeeId = props.registrationcertificate?.employeeId;
-        form.type = props.registrationcertificate?.type;
         form.registrationNumber = props.registrationcertificate?.registrationNumber;
         form.competence = props.registrationcertificate?.competence;
         form.validFrom = props.registrationcertificate?.validFrom;
@@ -77,15 +74,6 @@ const closeModal = () => {
                                 :error="form.errors.employeeId"
                         />
                         <InputError :message="form.errors.employeeId"/>
-                    </div>
-                    <div class="space-y-1">
-                        <InputLabel for="type" :value="lang().label.type"/>
-                        <SelectInput id="type" v-model="form.type"
-                                     :dataSet="typee"
-                                     class="block w-full"
-                                     :error="form.errors.type"
-                        />
-                        <InputError :message="form.errors.type"/>
                     </div>
                     <div class="flex gap-1">
                         <div class="w-1/2">

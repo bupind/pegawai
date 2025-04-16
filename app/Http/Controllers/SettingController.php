@@ -18,15 +18,10 @@ class SettingController extends Controller
     public function index()
     {
         return Inertia::render('Setting', [
-            'title'   => __('app.label.setting'),
-            'setting' => Setting::first()
+            'title'     => __('app.label.setting'),
+            'setting'   => Setting::first(),
+            'canLogins' => Setting::canLogin()
         ]);
-    }
-
-    public function expiredStatus(ExpiredService $service)
-    {
-        $service->updateAllStatuses();
-        return back()->with('success', 'Semua status berhasil diperbarui.');
     }
 
     /**
@@ -84,12 +79,13 @@ class SettingController extends Controller
                 $logo = $setting->logo;
             }
             $setting->update([
-                'user_id'     => auth()->user()->id,
-                'favicon'     => $favicon,
-                'logo'        => $logo,
-                'name'        => $request->name,
-                'short_name'  => $request->short_name,
-                'description' => $request->description,
+                'user_id'          => auth()->user()->id,
+                'favicon'          => $favicon,
+                'logo'             => $logo,
+                'name'             => $request->name,
+                'employeecanlogin' => $request->employeecanlogin,
+                'short_name'       => $request->short_name,
+                'description'      => $request->description,
             ]);
             return back();
         } catch(Throwable $th) {

@@ -15,6 +15,8 @@ return new class extends Migration {
             $table->id();
             $table->string('code')->unique();
             $table->string('name');
+            $table->string('user_id');
+            $table->string('type', 50);
             $table->string('gender', 50);
             $table->string('status')->default(Employee::STATUS_ACTIVE);
             $table->timestamps();

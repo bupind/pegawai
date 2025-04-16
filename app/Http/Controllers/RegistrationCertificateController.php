@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\RegistrationCertificate\RegistrationCertificateIndexRequest;
-use App\Http\Requests\RegistrationCertificate\RegistrationCertificateStoreRequest;
-use App\Http\Requests\RegistrationCertificate\RegistrationCertificateUpdateRequest;
+use App\Models\Employee;
 use App\Models\RegistrationCertificate;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 
 class RegistrationCertificateController extends Controller
@@ -20,18 +19,14 @@ class RegistrationCertificateController extends Controller
         $this->middleware('permission:registrationcertificate delete', ['only' => ['destroy', 'destroyBulk']]);
     }
 
-    public function index(RegistrationCertificateIndexRequest $request)
+    public function index(Request $request)
     {
-        $registrationcertificates = RegistrationCertificate::query()->with(['employee']);
+        $registrationcertificates = RegistrationCertificate::query()->with(['employee', 'user']);
+
         $registrationcertificates->where(function($query) use ($request) {
             $search = '%' . $request->search . '%';
-            $fields = [
-                'type',
-                'registrationNumber',
-                'competence',
-                'validFrom',
-                'validUntil'
-            ];
+            $fields = ['registrationNumber', 'competence', 'validFrom', 'validUntil'];
+
             $query->whereHas('employee', fn($q) => $q->where('name', 'LIKE', $search))
                 ->orWhereHas('user', fn($q) => $q->where('first_name', 'LIKE', $search))->orWhere(function($q) use (
                     $fields,
@@ -42,7 +37,6 @@ class RegistrationCertificateController extends Controller
                     }
                 });
         });
-
         if($request->filled('status')) {
             $registrationcertificates->where('status', $request->status);
         }
@@ -50,14 +44,38 @@ class RegistrationCertificateController extends Controller
         if($request->has(['field', 'order'])) {
             $registrationcertificates->orderBy($request->field, $request->order);
         }
-        $perPage = $request->has('perPage') ? $request->perPage : 10;
+        $perPage   = $request->has('perPage') ? $request->perPage : 10;
+        $paginated = $registrationcertificates->paginate($perPage)->onEachSide(0);
+        $today     = Carbon::today();
+        $datas     = $paginated->getCollection()->map(function($rc) use ($today) {
+            $validUntil = Carbon::parse($rc->validUntil);
+
+            if($validUntil->lessThanOrEqualTo($today)) {
+                $rc->calculatedStatus = RegistrationCertificate::STATUS_EXPIRED;
+            }
+            elseif($validUntil->lessThanOrEqualTo($today->copy()->addDays(180))) {
+                $rc->calculatedStatus = RegistrationCertificate::STATUS_INACTIVE;
+            }
+            else {
+                $rc->calculatedStatus = RegistrationCertificate::STATUS_VALID;
+            }
+
+            return $rc;
+        });
+        if($request->filled('calculatedStatus')) {
+            $datas = $datas->filter(function($rc) use ($request) {
+                return $rc->calculatedStatus === $request->calculatedStatus;
+            })->values();
+        }
+
+        $paginated->setCollection($datas);
         return Inertia::render('RegistrationCertificate/Index', [
             'title'       => __('app.label.registrationcertificate'),
-            'filters'     => $request->all(['search', 'field', 'order']),
+            'filters'     => $request->all(['search', 'field', 'order', 'calculatedStatus']),
             'perPage'     => (int)$perPage,
             'statuses'    => RegistrationCertificate::statuses(),
-            'types'       => RegistrationCertificate::types(),
-            'datas'       => $registrationcertificates->with(['user', 'employee'])->paginate($perPage)->onEachSide(0),
+            'types'       => Employee::types(),
+            'datas'       => $paginated,
             'breadcrumbs' => [
                 [
                     'label' => __('app.label.registrationcertificate'),
@@ -71,8 +89,20 @@ class RegistrationCertificateController extends Controller
     {
     }
 
-    public function store(RegistrationCertificateStoreRequest $request)
+    public function store(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'employeeId'         => 'required|exists:employee,id',
+            'registrationNumber' => 'required|string|max:100|unique:registration_certificate,registrationNumber',
+            'competence'         => 'required|string|max:200',
+            'validFrom'          => 'required|date',
+            'validUntil'         => 'required|date|after_or_equal:validFrom',
+        ]);
+
+        if($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
         try {
             $validUntil = Carbon::parse($request->validUntil);
             $today      = Carbon::today();
@@ -84,13 +114,12 @@ class RegistrationCertificateController extends Controller
                 $status = RegistrationCertificate::STATUS_INACTIVE;
             }
             else {
-                $status = RegistrationCertificate::STATUS_ACTIVE;
+                $status = RegistrationCertificate::STATUS_VALID;
             }
 
             RegistrationCertificate::create([
                 'registered_by'      => auth()->user()->id,
                 'employeeId'         => $request->employeeId,
-                'type'               => $request->type,
                 'registrationNumber' => $request->registrationNumber,
                 'competence'         => $request->competence,
                 'validFrom'          => $request->validFrom,
@@ -112,9 +141,21 @@ class RegistrationCertificateController extends Controller
     {
     }
 
-    public function update(RegistrationCertificateUpdateRequest $request,
-        RegistrationCertificate $registrationcertificate)
+    public function update(Request $request, $id)
     {
+        $registrationCertificate = RegistrationCertificate::findOrFail($id);
+        $validator               = Validator::make($request->all(), [
+            'employeeId'         => 'required|exists:employee,id',
+            'registrationNumber' => 'required|string|max:100|unique:registration_certificate,registrationNumber,' . $id,
+            'competence'         => 'required|string|max:200',
+            'validFrom'          => 'required|date',
+            'validUntil'         => 'required|date|after_or_equal:validFrom',
+        ]);
+
+        if($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
         try {
             $validUntil = Carbon::parse($request->validUntil);
             $today      = Carbon::today();
@@ -126,12 +167,11 @@ class RegistrationCertificateController extends Controller
                 $status = RegistrationCertificate::STATUS_INACTIVE;
             }
             else {
-                $status = RegistrationCertificate::STATUS_ACTIVE;
+                $status = RegistrationCertificate::STATUS_VALID;
             }
 
-            $registrationcertificate->update([
+            $registrationCertificate->update([
                 'employeeId'         => $request->employeeId,
-                'type'               => $request->type,
                 'registrationNumber' => $request->registrationNumber,
                 'competence'         => $request->competence,
                 'validFrom'          => $request->validFrom,
@@ -145,10 +185,11 @@ class RegistrationCertificateController extends Controller
         }
     }
 
-    public function destroy(RegistrationCertificate $registrationcertificate)
+    public function destroy($id)
     {
         try {
-            $registrationcertificate->delete();
+            $registrationCertificate = RegistrationCertificate::findOrFail($id);
+            $registrationCertificate->delete();
             return back()->with('success', __('app.label.deleted_successfully'));
         } catch(\Throwable $th) {
             return back()->with('error', __('app.label.deleted_error') . $th->getMessage());
