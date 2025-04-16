@@ -191,7 +191,7 @@ const bodys = [
                                               :statuses="props.statuses" :genders="props.genders" :types="props.types" :canLogins="props.canLogin"
                                               :employee="data.employee" @open="data.employee = val"/>
                                         <Delete v-show="can(['employee delete'])" :title="props.title"
-                                                :employee="data.val" @open="data.employee = val"/>
+                                                :employee="data.employee" @open="data.employee = val"/>
                                     </div>
                                 </td>
                             </tr>

@@ -185,10 +185,10 @@ class RegistrationCertificateController extends Controller
         }
     }
     
-    public function destroy(RegistrationCertificate $data)
+    public function destroy(RegistrationCertificate $registrationcertificate)
     {
         try {
-            $data->delete();
+            $registrationcertificate->delete();
             return back()->with('success', __('app.label.deleted_successfully'));
         } catch(\Throwable $th) {
             return back()->with('error', __('app.label.deleted_error') . $th->getMessage());

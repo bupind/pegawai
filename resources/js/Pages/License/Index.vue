@@ -194,7 +194,7 @@ const bodys = [
                                               :statuses="props.statuses" :license="data.val" :types="props.types"
                                               @open="data.val = val"/>
                                         <Delete v-show="can(['license delete'])" :title="props.title"
-                                                :val="data.val" @open="data.val = val"/>
+                                                :license="data.val" @open="data.val = val"/>
                                     </div>
                                 </td>
                             </tr>

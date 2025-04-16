@@ -198,7 +198,7 @@ const bodys = [
                                               @open="data.dataValue = val"/>
 
                                         <Delete v-show="can(['registrationcertificate delete'])" :title="props.title"
-                                                :registrationcertificate="data.val"
+                                                :registrationcertificate="data.dataValue"
                                                 @open="data.dataValue = val"/>
                                     </div>
                                 </td>

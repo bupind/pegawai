@@ -40,7 +40,7 @@ class LicenseController extends Controller
         $perPage   = $request->has('perPage') ? $request->perPage : 10;
         $paginated = $licenses->paginate($perPage)->onEachSide(0);
         $today     = Carbon::today();
-        $datas     = $paginated->getCollection()->map(function($license) use ($today) {
+        $datas = $paginated->getCollection()->map(function($license) use ($today) {
             $validUntil = Carbon::parse($license->validUntil);
 
             if($validUntil->lessThanOrEqualTo($today)) {
@@ -172,10 +172,10 @@ class LicenseController extends Controller
         }
     }
 
-    public function destroy(License $data)
+    public function destroy(License $license)
     {
         try {
-            $data->delete();
+            $license->delete();
             return back()->with('success', __('app.label.deleted_successfully'));
         } catch(\Throwable $th) {
             return back()->with('error', __('app.label.deleted_error') . $th->getMessage());
