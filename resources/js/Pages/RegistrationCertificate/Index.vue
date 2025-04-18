@@ -142,21 +142,6 @@ const bodys = [
                                         class="h-10 border-t border-b border-gray-300 dark:border-gray-600 rounded-none w-40 text-sm dark:bg-gray-800 dark:text-gray-100"
                                         type="text"
                                     />
-
-                                    <select
-                                        v-model="data.params.calculatedStatus"
-                                        class="h-10 rounded-r-md border border-l-0 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm text-gray-700 dark:text-gray-200 px-2 focus:outline-none"
-                                    >
-                                        <option value="">Status</option>
-                                        <option
-                                            v-for="(label, key) in props.statuses"
-                                            :key="key"
-                                            :value="key"
-                                        >
-                                            {{ label }}
-                                        </option>
-                                    </select>
-
                                 </div>
                             </div>
                         </template>

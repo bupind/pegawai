@@ -46,14 +46,15 @@ class EmployeeController extends Controller
         $settings = Setting::first();
         $canLogin = $settings->employeecanlogin;
         return Inertia::render('Employee/Index', [
-            'title'    => __('app.label.employee'),
-            'filters'  => $request->only(['search', 'field', 'order']),
-            'perPage'  => $perPage,
-            'statuses' => Employee::statuses(),
-            'genders'  => Employee::genders(),
-            'types'    => Employee::types(),
-            'canLogin' => $canLogin,
-            'datas'    => ($canLogin === Setting::LOGIN_TRUE ? $employees->with('user') : $employees)->paginate($perPage)->onEachSide(0),
+            'title'       => __('app.label.employee'),
+            'filters'     => $request->only(['search', 'field', 'order']),
+            'perPage'     => $perPage,
+            'statuses'    => Employee::statuses(),
+            'genders'     => Employee::genders(),
+            'types'       => Employee::types(),
+            'canLogin'    => $canLogin,
+            'datas'       => ($canLogin === Setting::LOGIN_TRUE ? $employees->with('user') : $employees)->paginate($perPage)
+                ->onEachSide(0),
             'breadcrumbs' => [
                 ['label' => __('app.label.employee'), 'href' => route('employee.index')],
             ],
@@ -140,34 +141,35 @@ class EmployeeController extends Controller
         $validator = Validator::make($request->all(), [
             'code'   => 'required|unique:employee,code,' . $employee->id,
             'name'   => 'required|string|max:200',
-            'gender' => 'required',
-            'type'   => 'required',
-            'status' => 'required',
+            'gender' => 'required|in:' . implode(',', array_keys(Employee::genders())),
+            'type'   => 'required|in:' . implode(',', array_keys(Employee::types())),
+            'status' => 'required|in:' . implode(',', array_keys(Employee::statuses())),
         ]);
 
-        if ($validator->fails()) {
+        if($validator->fails()) {
             return back()->withErrors($validator)->withInput();
         }
 
         DB::beginTransaction();
         try {
-            if ($canLogin === Setting::LOGIN_TRUE) {
+            if($canLogin === Setting::LOGIN_TRUE) {
                 $userValidator = Validator::make($request->all(), [
                     'email'        => 'required|email|unique:users,email,' . optional($employee->user)->id,
                     'phone_number' => 'required|string|max:20',
                 ]);
 
-                if ($userValidator->fails()) {
+                if($userValidator->fails()) {
                     return back()->withErrors($userValidator)->withInput();
                 }
 
-                if ($employee->user) {
+                if($employee->user) {
                     $employee->user->update([
                         'first_name'   => $request->name,
                         'email'        => $request->email,
                         'phone_number' => $request->phone_number,
                     ]);
-                } else {
+                }
+                else {
                     $user = User::create([
                         'first_name'        => $request->name,
                         'email'             => $request->email,
@@ -193,7 +195,7 @@ class EmployeeController extends Controller
             DB::commit();
             return back()->with('success', __('app.label.updated_successfully'));
 
-        } catch (\Throwable $th) {
+        } catch(\Throwable $th) {
             DB::rollBack();
             return back()->with('error', __('app.label.updated_error') . $th->getMessage());
         }

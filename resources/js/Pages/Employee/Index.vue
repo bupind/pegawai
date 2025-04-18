@@ -29,8 +29,6 @@ const props = defineProps({
     perPage: Number,
 });
 
-console.log(props.canLogin)
-
 const showSearch = ref(false);
 const toggleSearch = () => {
     showSearch.value = !showSearch.value;
@@ -103,7 +101,6 @@ const bodys = [
     {label: 'status', value: (val) => props.statuses[val.status] || '-'},
 ];
 
-
 </script>
 
 <template>
@@ -123,15 +120,11 @@ const bodys = [
                                 <SelectInput v-model="data.params.perPage" :dataSet="$page.props.app.perpage"
                                              class="h-9 text-sm px-3"/>
                                 <Create v-show="can(['employee create'])" :title="props.title"
-                                        :statuses="props.statuses" :genders="props.genders" :types="props.types" :canLogins="props.canLogin"/>
-
-                                <DeleteBulk v-show=" data.selectedId.length != 0 && can(['license delete'])"
-                                            :selectedId="data.selectedId"
-                                            :title="props.title"
-                                            @close="
-                                        (data.selectedId = []),
-                                            (data.multipleSelect = false)
-                                    "
+                                        :statuses="props.statuses" :genders="props.genders" :types="props.types"
+                                        :canLogins="props.canLogin"/>
+                                <DeleteBulk v-show=" data.selectedId.length != 0 && can(['employee delete'])"
+                                            :selectedId="data.selectedId" :title="props.title"
+                                            @close="(data.selectedId = []), (data.multipleSelect = false)"
                                 />
                             </div>
                             <div class="flex items-center space-x-2">
@@ -185,13 +178,16 @@ const bodys = [
                                 <td class="whitespace-nowrap flex justify-end px-2 py-1">
                                     <div class="flex w-fit rounded overflow-hidden">
                                         <Edit v-show="can(['employee update'])" :title="props.title"
-                                              :statuses="props.statuses" :genders="props.genders" :types="props.types" :canLogins="props.canLogin"
-                                              :employee="data.employee" @open="data.employee = val"/>
+                                              :statuses="props.statuses" :genders="props.genders" :types="props.types"
+                                              :canLogins="props.canLogin" :employee="data.employee" @open="data.employee = val"/>
+
                                         <View v-show="can(['employee read'])" :title="props.title"
-                                              :statuses="props.statuses" :genders="props.genders" :types="props.types" :canLogins="props.canLogin"
-                                              :employee="data.employee" @open="data.employee = val"/>
+                                              :statuses="props.statuses" :genders="props.genders" :types="props.types"
+                                              :canLogins="props.canLogin" :employee="data.employee" @open="data.employee = val"/>
+
                                         <Delete v-show="can(['employee delete'])" :title="props.title"
                                                 :employee="data.employee" @open="data.employee = val"/>
+
                                     </div>
                                 </td>
                             </tr>

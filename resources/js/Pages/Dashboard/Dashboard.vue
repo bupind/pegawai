@@ -2,7 +2,6 @@
 import Table from "@/Components/Table.vue";
 import {computed, ref} from "vue";
 import AppLayout from "@/Layouts/AppLayout.vue";
-import GuestLayout from "@/Layouts/GuestLayout.vue";
 import Breadcrumb from "@/Layouts/Authenticated/Breadcrumb.vue";
 import PieChart from "./partials/PieChart.vue";
 import LineChart from "./partials/LineChart.vue";
@@ -93,7 +92,7 @@ const handleLicenseClick = (label) => {
 
 
 const LayoutComponent = computed(() => {
-    return props.userRole === "superuser" ? AppLayout : GuestLayout;
+    return props.userRole === "superuser" ? AppLayout : AppLayout;
 });
 </script>
 
@@ -102,11 +101,6 @@ const LayoutComponent = computed(() => {
         <template #title>
             <span>Dashboard</span>
         </template>
-
-        <template v-if="userRole === 'superuser'" #breadcrumb>
-            <Breadcrumb/>
-        </template>
-
         <div class="py-6">
             <div class="max-w-full mx-auto p-6">
                 <h1 class="text-2xl font-bold mb-4">Selamat Datang</h1>
@@ -124,7 +118,7 @@ const LayoutComponent = computed(() => {
                     </div>
                     <div class="bg-white dark:bg-slate-800 shadow-md rounded-md h-80 flex flex-col p-2">
                         <div class="flex justify-between items-center mb-4 px-3">
-                            <h2 class="text-xl font-semibold capitalize text-start">{{lang().label.warning_str}}</h2>
+                            <h2 class="text-xl font-semibold capitalize text-start">{{ lang().label.warning_str }}</h2>
 
                         </div>
                         <div class="flex-grow flex items-center justify-center">
@@ -134,7 +128,7 @@ const LayoutComponent = computed(() => {
                     </div>
                     <div class="bg-white dark:bg-slate-800 shadow-md rounded-md h-80 flex flex-col p-2">
                         <div class="flex justify-between items-center mb-4 px-3">
-                            <h2 class="text-xl font-semibold capitalize text-start">{{lang().label.warning_sip}}</h2>
+                            <h2 class="text-xl font-semibold capitalize text-start">{{ lang().label.warning_sip }}</h2>
 
                         </div>
                         <div class="flex-grow flex items-center justify-center">
@@ -146,12 +140,12 @@ const LayoutComponent = computed(() => {
                 <div v-if="lineChartData" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 mt-2">
                     <div class="col-span-12 bg-white dark:bg-slate-800 p-6 shadow-md rounded-md">
                         <div class="flex justify-between items-center mb-4">
-                            <h2 class="text-xl font-semibold capitalize text-start">{{lang().label.status_certificate_and_license }}</h2>
+                            <h2 class="text-xl font-semibold capitalize text-start">
+                                {{ lang().label.status_certificate_and_license }}</h2>
                         </div>
                         <LineChart :data="lineChartData"/>
                     </div>
                 </div>
-
                 <div v-if="certificateTable.visible"
                      class="mt-4 bg-white dark:bg-slate-800 p-4 rounded shadow col-span-12">
                     <div class="flex justify-between items-center mb-2">
@@ -223,8 +217,6 @@ const LayoutComponent = computed(() => {
                         </Table>
                     </div>
                 </div>
-
-
             </div>
         </div>
     </component>
