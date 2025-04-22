@@ -1,24 +1,17 @@
 <script setup>
 import ApplicationLogo from "@/Components/ApplicationLogo.vue";
 import {Disclosure, DisclosureButton, DisclosurePanel} from "@headlessui/vue";
-import {
-    ChevronRightIcon,
-    Cog6ToothIcon,
-    DocumentTextIcon,
-    FolderIcon,
-    NewspaperIcon,
-    PhotoIcon,
-    QuestionMarkCircleIcon,
-    SignalIcon,
-    Squares2X2Icon,
-    TrophyIcon,
-    UserIcon
-} from "@heroicons/vue/24/outline";
+import {ChevronRightIcon, Cog6ToothIcon, NewspaperIcon, Squares2X2Icon, UserIcon} from "@heroicons/vue/24/outline";
 import {Link, usePage} from "@inertiajs/vue3";
 
 const page = usePage();
 const isRouteActive = (routeName) => route().current(routeName);
-const menus = [
+
+const userRoles = page.props.auth?.user?.roles || [];
+const isSuperUser = userRoles.some(role => role.name === 'superuser');
+
+// Default menu untuk superuser
+const superuserMenus = [
     {
         label: "dashboard",
         route: "dashboard",
@@ -31,7 +24,11 @@ const menus = [
         permission: null,
         submenus: [
             {label: "employee", route: "employee.index", permission: "employee read"},
-            {label: "registrationcertificate", route: "registrationcertificate.index", permission: "registrationcertificate read"},
+            {
+                label: "registrationcertificate",
+                route: "registrationcertificate.index",
+                permission: "registrationcertificate read"
+            },
             {label: "license", route: "license.index", permission: "license read"},
         ]
     },
@@ -53,6 +50,36 @@ const menus = [
         permission: "setting read"
     }
 ];
+
+const nonSuperuserMenus = [
+    {
+        label: "dashboard",
+        route: "dashboard",
+        icon: Squares2X2Icon,
+        permission: null
+    },
+    {
+        label: "employee",
+        route: "employee.index",
+        icon: NewspaperIcon,
+        permission: "employee read"
+    },
+    {
+        label: "registrationcertificate",
+        route: "registrationcertificate.index",
+        icon: NewspaperIcon,
+        permission: "registrationcertificate read"
+    },
+    {
+        label: "license",
+        route: "license.index",
+        icon: NewspaperIcon,
+        permission: "license read"
+    }
+];
+const menus = isSuperUser ? superuserMenus : nonSuperuserMenus;
+
+
 const isActiveMenu = (menu) => {
     return menu.submenus?.some(sub => isRouteActive(sub.route));
 };
@@ -88,7 +115,8 @@ const isActiveMenu = (menu) => {
                             <component :is="menu.icon" class="w-5 h-auto"/>
                             <span>{{ lang().label[menu.label] }}</span>
                         </div>
-                        <ChevronRightIcon class="w-5 h-5 transform transition-transform duration-200" :class="{ 'rotate-90': open || isActiveMenu(menu) }"/>
+                        <ChevronRightIcon class="w-5 h-5 transform transition-transform duration-200"
+                                          :class="{ 'rotate-90': open || isActiveMenu(menu) }"/>
                     </DisclosureButton>
                     <DisclosurePanel>
                         <ul class="ml-6 space-y-1 rounded-md py-1">
