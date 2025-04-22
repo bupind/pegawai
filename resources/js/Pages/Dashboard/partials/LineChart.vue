@@ -39,7 +39,7 @@ const chartOptions = ref({
     xaxis: {
         type: 'category',
         categories: [],
-        title: {text: 'Tanggal'}
+        title: {text: 'Bulan'}
     },
     yaxis: {
         title: {text: ''},
