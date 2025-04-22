@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DataController;
 use App\Http\Controllers\DepartementController;
@@ -34,6 +35,10 @@ Route::get('/set-locale/{locale}', function($locale) {
     Session::put('locale', $locale);
     return back();
 })->name('set-locale');
+
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [LoginController::class, 'login']);
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::prefix('system')->middleware([
     'auth:sanctum',

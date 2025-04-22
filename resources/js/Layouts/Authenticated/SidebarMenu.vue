@@ -73,19 +73,14 @@ const isActiveMenu = (menu) => {
             <li v-if="!menu.submenus && (!menu.permission || can([menu.permission]))"
                 :class="isRouteActive(menu.route) ? 'border-l-4 border-white font-semibold bg-white/20 dark:bg-primary/30' : ''"
                 class="hover:bg-white/20 dark:hover:bg-primary/30">
-                <Link :href="route(menu.route)" class="flex items-center py-1.5 px-3 space-x-2"
+                <Link :href="route(menu.route)"
+                      class="flex items-center py-1.5 px-3 space-x-2"
                       preserve-state preserve-scroll>
                     <component :is="menu.icon" class="w-5 h-auto"/>
                     <span>{{ lang().label[menu.label] }}</span>
                 </Link>
             </li>
-            <Disclosure
-                v-else
-                v-slot="{ open }"
-                as="div"
-                :default-open="isActiveMenu(menu)"
-                v-if="menu.submenus && menu.submenus.some(sub => can([sub.permission]))"
-            >
+            <Disclosure v-else v-slot="{ open }" as="div" :default-open="isActiveMenu(menu)">
                 <li class="hover:bg-white/20 dark:hover:bg-primary/30"
                     :class="{ 'border-l-4 border-white font-semibold bg-white/20 dark:bg-primary/30': isActiveMenu(menu) }">
                     <DisclosureButton class="flex items-center justify-between w-full py-1.5 px-3 space-x-2">

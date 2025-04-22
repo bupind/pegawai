@@ -24,7 +24,7 @@ class DashboardController extends Controller
 
         $months = collect();
         for($i = 5; $i >= 0; $i--) {
-            $months->push(now()->subMonths($i)->format('Y-m'));
+            $months->push(now()->subMonths($i)->format('Y-M'));
         }
 
         $maleEmployees   = Employee::where('gender', Employee::GENDER_MALE)->count();

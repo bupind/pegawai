@@ -184,7 +184,7 @@ return [
         'female'                                  => 'Perempuan',
         'nurse'                                   => 'Perawat',
         'doctor'                                  => 'Dokter',
-        'medical_support'                         => 'Penunjang Medis',
+        'medical_support'                         => 'Tenaga Kesehatan Lain',
         'warning_str'                             => 'Peringatan STR',
         'warning_sip'                             => 'Peringatan SIP',
         'status_certificate_and_license'          => 'Status Sertifikat dan Lisensi Per Bulan',
